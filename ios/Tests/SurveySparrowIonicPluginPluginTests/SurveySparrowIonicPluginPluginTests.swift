@@ -1,15 +1,67 @@
 import XCTest
 @testable import SurveySparrowIonicPluginPlugin
 
-class SurveySparrowIonicPluginTests: XCTestCase {
-    func testEcho() {
-        // This is an example of a functional test case for a plugin.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-
-        let implementation = SurveySparrowIonicPlugin()
-        let value = "Hello, World!"
-        let result = implementation.echo(value)
-
-        XCTAssertEqual(value, result)
+class SurveySparrowIonicPluginPluginTests: XCTestCase {
+    
+    var plugin: SurveySparrowIonicPluginPlugin!
+    var mockCall: CAPPluginCall!
+    
+    override func setUp() {
+        super.setUp()
+        plugin = SurveySparrowIonicPluginPlugin()
+    }
+    
+    override func tearDown() {
+        plugin = nil
+        mockCall = nil
+        super.tearDown()
+    }
+    
+    func testLoadFullScreenSurvey() {
+        
+        let domain = "gokulkrishnaraju1183.surveysparrow.com"
+        let token = "tt-ChaSVQWRDF7"
+        let params: [String: String] = ["emailaddress": "email@email.com", "email": "email@email.com"]
+        let properties: [String: Any] = [
+            "sparrowLang": "en",
+            "isCloseButtonEnabled": true
+        ]
+        
+        mockCall = CAPPluginCall(callbackId: "testCallbackId", options: [
+            "domain": domain,
+            "token": token,
+            "params": params,
+            "properties": properties
+        ]) { result, _ in
+            XCTAssertNotNil(result)
+        }
+        
+        plugin.loadFullScreenSurvey(mockCall)
+        
+        XCTAssertNotNil(plugin)
+    }
+    
+    func testLoadFullScreenSurveyWithValidation() {
+        
+        let domain = "gokulkrishnaraju1183.surveysparrow.com"
+        let token = "tt-ChaSVQWRDF7"
+        let params: [String: String] = ["emailaddress": "email@email.com", "email": "email@email.com"]
+        let properties: [String: Any] = [
+            "sparrowLang": "en",
+            "isCloseButtonEnabled": true
+        ]
+        
+        mockCall = CAPPluginCall(callbackId: "testCallbackId", options: [
+            "domain": domain,
+            "token": token,
+            "params": params,
+            "properties": properties
+        ]) { result, _ in
+            XCTAssertNotNil(result)
+        }
+        
+        plugin.loadFullScreenSurveyWithValidation(mockCall)
+        
+        XCTAssertNotNil(plugin)
     }
 }

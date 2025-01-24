@@ -1,8 +1,8 @@
 import { registerPlugin } from '@capacitor/core';
 
-import type { SurveySparrowIonicPlugin } from './definitions';
+import type { SurveySparrowIonicPluginPlugin } from './definitions';
 
-const SurveySparrowIonicPlugin = registerPlugin<SurveySparrowIonicPlugin>('SurveySparrowIonicPlugin');
+const SurveySparrowIonicPlugin = registerPlugin<SurveySparrowIonicPluginPlugin>('SurveySparrowIonicPlugin');
 
 export * from './definitions';
 export { SurveySparrowIonicPlugin };

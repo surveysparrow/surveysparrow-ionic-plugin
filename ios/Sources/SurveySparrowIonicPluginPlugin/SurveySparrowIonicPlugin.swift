@@ -36,9 +36,6 @@ struct FullScreenSurveyView: UIViewControllerRepresentable {
 
     func updateUIViewController(_ uiViewController: SsSurveyViewController, context: Context) {}
 
-    func makeCoordinator() -> Coordinator {
-        return Coordinator()
-    }
 }
 
 struct FullScreenSurveyWithValidation {
@@ -47,15 +44,23 @@ struct FullScreenSurveyWithValidation {
     let token: String?
     let properties: [String: Any]
     let params: [String: String]?
-
+    
     func startFullScreenSurveyWithValidation() {
-           if let parentViewController = UIApplication.shared.windows.first?.rootViewController {
-               print("Success")
-               SsSurveyView(properties: properties).loadFullscreenSurvey(parent: parentViewController, delegate: SurveyDelegate(), domain: domain, token: token, params: params)
-           } else {
-               print("Error: Unable to access parentViewController.")
-           }
-       }
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let rootViewController = windowScene.windows.first?.rootViewController else {
+            print("Error: Unable to access rootViewController.")
+            return
+        }
+        
+        let surveyView = SsSurveyView(properties: properties)
+        surveyView.loadFullscreenSurvey(
+            parent: rootViewController,
+            delegate: SurveyDelegate(),
+            domain: domain,
+            token: token,
+            params: params
+        )
+    }
 }
 
 class SsDelegate: SsSurveyDelegate {
