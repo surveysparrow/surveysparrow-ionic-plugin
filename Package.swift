@@ -10,6 +10,7 @@ let package = Package(
             targets: ["SurveySparrowIonicPluginPlugin"])
     ],
     dependencies: [
+        .package(url: "https://github.com/surveysparrow/surveysparrow-ios-sdk.git", exact: "1.0.6"),
         .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", from: "7.0.0")
     ],
     targets: [
@@ -17,7 +18,8 @@ let package = Package(
             name: "SurveySparrowIonicPluginPlugin",
             dependencies: [
                 .product(name: "Capacitor", package: "capacitor-swift-pm"),
-                .product(name: "Cordova", package: "capacitor-swift-pm")
+                .product(name: "Cordova", package: "capacitor-swift-pm"),
+                .product(name: "SurveySparrowSdk", package: "surveysparrow-ios-sdk")
             ],
             path: "ios/Sources/SurveySparrowIonicPluginPlugin"),
         .testTarget(
