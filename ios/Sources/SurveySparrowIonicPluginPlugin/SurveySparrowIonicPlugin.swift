@@ -1,7 +1,6 @@
 
 import Foundation
 import SwiftUI
-import SurveySparrowSdk
 
 @objc public class SurveySparrowIonicPlugin: NSObject {
     
@@ -30,7 +29,7 @@ struct FullScreenSurveyView: UIViewControllerRepresentable {
         ssSurveyViewController.params = params
         ssSurveyViewController.properties = properties
         ssSurveyViewController.getSurveyLoadedResponse = true
-        ssSurveyViewController.surveyDelegate = SurveyDelegate()
+        ssSurveyViewController.surveyDelegate = SsDelegate()
         return ssSurveyViewController
     }
 
@@ -55,7 +54,7 @@ struct FullScreenSurveyWithValidation {
         let surveyView = SsSurveyView(properties: properties)
         surveyView.loadFullscreenSurvey(
             parent: rootViewController,
-            delegate: SurveyDelegate(),
+            delegate: SsDelegate(),
             domain: domain,
             token: token,
             params: params

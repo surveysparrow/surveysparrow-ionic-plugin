@@ -1,4 +1,5 @@
 import XCTest
+import Capacitor
 @testable import SurveySparrowIonicPluginPlugin
 
 class SurveySparrowIonicPluginPluginTests: XCTestCase {
@@ -32,9 +33,11 @@ class SurveySparrowIonicPluginPluginTests: XCTestCase {
             "token": token,
             "params": params,
             "properties": properties
-        ]) { result, _ in
+        ], success: { result, _ in
             XCTAssertNotNil(result)
-        }
+        }, error: { error in
+            XCTAssertNil(error)
+        })
         
         plugin.loadFullScreenSurvey(mockCall)
         
@@ -56,9 +59,11 @@ class SurveySparrowIonicPluginPluginTests: XCTestCase {
             "token": token,
             "params": params,
             "properties": properties
-        ]) { result, _ in
+        ], success: { result, _ in
             XCTAssertNotNil(result)
-        }
+        }, error: { error in
+            XCTAssertNil(error)
+        })
         
         plugin.loadFullScreenSurveyWithValidation(mockCall)
         
