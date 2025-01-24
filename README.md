@@ -1,1 +1,0 @@
-# surveysparrow-ionic-plugin
