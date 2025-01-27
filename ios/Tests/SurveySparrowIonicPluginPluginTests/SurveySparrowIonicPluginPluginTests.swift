@@ -31,7 +31,6 @@ class SurveySparrowIonicPluginPluginTests: XCTestCase {
         mockCall = CAPPluginCall(callbackId: "testCallbackId", options: [
             "domain": domain,
             "token": token,
-            "params": params,
             "properties": properties
         ], success: { result, _ in
             XCTAssertNotNil(result)

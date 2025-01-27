@@ -22,10 +22,9 @@ public class SurveySparrowIonicPluginPlugin extends Plugin {
     public void loadFullScreenSurvey(PluginCall call) {
         String domain = call.getString("domain");
         String token = call.getString("token");
-        CustomParam[] params = parseParams(call.getObject("params"));
         HashMap<String, String> properties = parseProperties(call.getObject("properties"));
 
-        implementation.loadFullScreenSurvey(domain, token, params, properties, this.getActivity());
+        implementation.loadFullScreenSurvey(domain, token, properties, this.getActivity());
         call.resolve();
     }
 

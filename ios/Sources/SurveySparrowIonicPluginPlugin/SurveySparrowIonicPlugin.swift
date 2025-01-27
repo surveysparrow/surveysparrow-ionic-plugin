@@ -4,12 +4,11 @@ import SwiftUI
 
 @objc public class SurveySparrowIonicPlugin: NSObject {
     
-    @objc public func loadFullScreenSurvey(domain: String, token: String, params: [String: String],  properties: [String: Any]) {
+    @objc public func loadFullScreenSurvey(domain: String, token: String, properties: [String: Any]) {
         DispatchQueue.main.async {
             let ssSurveyViewController = SsSurveyViewController()
             ssSurveyViewController.domain = domain
             ssSurveyViewController.token = token
-            ssSurveyViewController.params = params
             ssSurveyViewController.properties = properties
             ssSurveyViewController.getSurveyLoadedResponse = true
             ssSurveyViewController.surveyDelegate = SsDelegate()

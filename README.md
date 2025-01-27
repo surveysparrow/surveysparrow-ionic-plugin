@@ -13,11 +13,10 @@ npx cap sync
 
 <docgen-index>
 
-- [surveysparrow-ionic-plugin](#surveysparrow-ionic-plugin)
-  - [Install](#install)
-  - [API](#api)
-    - [loadFullScreenSurvey(...)](#loadfullscreensurvey)
-    - [loadFullScreenSurveyWithValidation(...)](#loadfullscreensurveywithvalidation)
+* [`loadFullScreenSurvey(...)`](#loadfullscreensurvey)
+* [`loadFullScreenSurveyWithValidation(...)`](#loadfullscreensurveywithvalidation)
+* [Interfaces](#interfaces)
+* [Type Aliases](#type-aliases)
 
 </docgen-index>
 

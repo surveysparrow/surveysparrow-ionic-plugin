@@ -4,7 +4,6 @@ import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.getcapacitor.PluginCall;
 import com.surveysparrow.ss_android_sdk.OnSsResponseEventListener;
 import com.surveysparrow.ss_android_sdk.OnSsValidateSurveyEventListener;
 import com.surveysparrow.ss_android_sdk.SsSurvey;
@@ -18,11 +17,11 @@ public class SurveySparrowIonicPlugin implements OnSsValidateSurveyEventListener
     private static final int SURVEY_REQUEST_CODE = 1;
     private static final int SURVEY_SCHEDULE_REQUEST_CODE = 2;
 
-    public void loadFullScreenSurvey(String domain, String token, CustomParam[] params, HashMap properties, AppCompatActivity activity) {
+    public void loadFullScreenSurvey(String domain, String token, HashMap properties, AppCompatActivity activity) {
         if(activity == null) {
             throw new RuntimeException("Activity is null. Error fetching activity.");
         }
-
+        CustomParam[] params = new CustomParam[0];
         SsSurvey survey = new SsSurvey(domain, token, params, properties);
         SurveySparrow surveySparrow = new SurveySparrow(activity, survey)
                 .enableBackButton(true)

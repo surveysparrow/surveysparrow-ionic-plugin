@@ -3,7 +3,6 @@ export interface SurveySparrowIonicPluginPlugin {
     loadFullScreenSurvey(options: {
       domain: String;
       token: String;
-      params: Object;
       properties: Object;
     }): Promise<void>;
   
