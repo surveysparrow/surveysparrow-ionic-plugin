@@ -1,6 +1,5 @@
 package com.surveysparrow.plugins.ionic;
 
-import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -8,17 +7,16 @@ import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 
 import com.surveysparrow.ss_android_sdk.SsSurvey.CustomParam;
-import org.json.JSONException;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;cd
 
 @CapacitorPlugin(name = "SurveySparrowIonicPlugin")
 public class SurveySparrowIonicPluginPlugin extends Plugin {
 
-    private final SurveySparrowIonicPlugin implementation = new SurveySparrowIonicPlugin(this.getActivity());
+    private final SurveySparrowIonicPlugin implementation = new SurveySparrowIonicPlugin();
 
     @PluginMethod
     public void loadFullScreenSurvey(PluginCall call) {
@@ -27,7 +25,7 @@ public class SurveySparrowIonicPluginPlugin extends Plugin {
         CustomParam[] params = parseParams(call.getObject("params"));
         HashMap<String, String> properties = parseProperties(call.getObject("properties"));
 
-        implementation.loadFullScreenSurvey(domain, token, params, properties);
+        implementation.loadFullScreenSurvey(domain, token, params, properties, this.getActivity());
         call.resolve();
     }
 
@@ -38,7 +36,7 @@ public class SurveySparrowIonicPluginPlugin extends Plugin {
         CustomParam[] params = parseParams(call.getObject("params"));
         HashMap<String, String> properties = parseProperties(call.getObject("properties"));
 
-        implementation.loadFullScreenSurveyWithValidation(domain, token, params, properties);
+        implementation.loadFullScreenSurveyWithValidation(domain, token, params, properties, this.getActivity());
         call.resolve();
     }
 
@@ -66,6 +64,9 @@ public class SurveySparrowIonicPluginPlugin extends Plugin {
                 String key = it.next();
                 properties.put(key, jsProperties.getString(key));
             }
+        }
+        if (!properties.containsKey("langCode")) {
+            properties.put("langCode", "en");
         }
         return properties;
     }

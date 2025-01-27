@@ -17,13 +17,8 @@ public class SurveySparrowIonicPlugin implements OnSsValidateSurveyEventListener
 
     private static final int SURVEY_REQUEST_CODE = 1;
     private static final int SURVEY_SCHEDULE_REQUEST_CODE = 2;
-    private AppCompatActivity activity;
 
-    public SurveySparrowIonicPlugin(AppCompatActivity activity) {
-        activity = activity;
-    }
-
-    public void loadFullScreenSurvey(String domain, String token, CustomParam[] params, HashMap properties) {
+    public void loadFullScreenSurvey(String domain, String token, CustomParam[] params, HashMap properties, AppCompatActivity activity) {
         if(activity == null) {
             throw new RuntimeException("Activity is null. Error fetching activity.");
         }
@@ -36,7 +31,7 @@ public class SurveySparrowIonicPlugin implements OnSsValidateSurveyEventListener
         surveySparrow.startSurveyForResult(SURVEY_REQUEST_CODE);
     }
 
-    public void loadFullScreenSurveyWithValidation(String domain, String token, CustomParam[] params, HashMap properties) {
+    public void loadFullScreenSurveyWithValidation(String domain, String token, CustomParam[] params, HashMap properties, AppCompatActivity activity) {
         SsSurvey survey = new SsSurvey(domain, token, params, properties);
         SurveySparrow surveySparrow = new SurveySparrow(activity, survey)
                 .enableBackButton(true)

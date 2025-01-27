@@ -24,7 +24,7 @@ class SurveySparrowIonicPluginPluginTests: XCTestCase {
         let token = "tt-ChaSVQWRDF7"
         let params: [String: String] = ["emailaddress": "email@email.com", "email": "email@email.com"]
         let properties: [String: Any] = [
-            "sparrowLang": "en",
+            "langCode": "en",
             "isCloseButtonEnabled": true
         ]
         
@@ -50,7 +50,7 @@ class SurveySparrowIonicPluginPluginTests: XCTestCase {
         let token = "tt-ChaSVQWRDF7"
         let params: [String: String] = ["emailaddress": "email@email.com", "email": "email@email.com"]
         let properties: [String: Any] = [
-            "sparrowLang": "en",
+            "langCode": "en",
             "isCloseButtonEnabled": true
         ]
         
