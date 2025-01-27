@@ -9,8 +9,11 @@ import com.getcapacitor.annotation.CapacitorPlugin;
 
 import com.surveysparrow.ss_android_sdk.SsSurvey.CustomParam;
 import org.json.JSONException;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;cd
 
 @CapacitorPlugin(name = "SurveySparrowIonicPlugin")
 public class SurveySparrowIonicPluginPlugin extends Plugin {
@@ -40,24 +43,20 @@ public class SurveySparrowIonicPluginPlugin extends Plugin {
     }
 
     private CustomParam[] parseParams(JSObject jsParams) {
-        if (jsParams == null || jsParams.keys().length == 0) {
+        if (jsParams == null) {
             return new CustomParam[0];
         }
     
-        String[] keys = jsParams.keys();
-        CustomParam[] params = new CustomParam[keys.length];
+        Iterator<String> keysIterator = jsParams.keys();
+        List<CustomParam> paramsList = new ArrayList<>();
     
-        for (int i = 0; i < keys.length; i++) {
-            try {
-                String key = keys[i];
-                String value = jsParams.getString(key);
-                params[i] = new CustomParam(key, value);
-            } catch (JSONException e) {
-                throw new RuntimeException("Invalid parameter for key: " + keys[i], e);
-            }
+        while (keysIterator.hasNext()) {
+            String key = keysIterator.next();
+            String value = jsParams.getString(key);
+            paramsList.add(new CustomParam(key, value));
         }
 
-        return params;
+        return paramsList.toArray(new CustomParam[0]);
     }
 
     private HashMap<String, String> parseProperties(JSObject jsProperties) {

@@ -15,10 +15,10 @@ public class SurveySparrowIonicPluginPlugin: CAPPlugin, CAPBridgedPlugin {
     
     @objc public func loadFullScreenSurvey(_ call: CAPPluginCall) {
         
-        let domain = call.getString("domain") as? String
-        let token = call.getString("token") as? String
+        let domain = call.getString("domain")
+        let token = call.getString("token")
         let params = call.getObject("params") as? [String : String]
-        let properties = call.getObject("properties") as? [String : Any]
+        let properties = call.getObject("properties")
 
         guard let domain = domain, let token = token, let params = params, let properties = properties else {
             call.reject("Invalid or missing parameters")
@@ -33,10 +33,10 @@ public class SurveySparrowIonicPluginPlugin: CAPPlugin, CAPBridgedPlugin {
     
     @objc public func loadFullScreenSurveyWithValidation(_ call: CAPPluginCall) {
 
-        let domain = call.getString("domain") as? String
-        let token = call.getString("token") as? String
+        let domain = call.getString("domain")
+        let token = call.getString("token")
         let params = call.getObject("params") as? [String : String]
-        let properties = call.getObject("properties") as? [String : Any]
+        let properties = call.getObject("properties")
         
         guard let domain = domain, let token = token, let params = params, let properties = properties else {
             call.reject("Invalid or missing parameters")
