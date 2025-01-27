@@ -7,7 +7,8 @@ public class SurveySparrowIonicPluginPlugin: CAPPlugin, CAPBridgedPlugin {
     public let identifier = "SurveySparrowIonicPluginPlugin"
     public let jsName = "SurveySparrowIonicPlugin"
     public let pluginMethods: [CAPPluginMethod] = [
-        CAPPluginMethod(name: "echo", returnType: CAPPluginReturnPromise)
+        CAPPluginMethod(name: "loadFullScreenSurvey", returnType: CAPPluginReturnNone),
+        CAPPluginMethod(name: "loadFullScreenSurveyWithValidation", returnType: CAPPluginReturnNone)
     ]
     
     private let implementation = SurveySparrowIonicPlugin()

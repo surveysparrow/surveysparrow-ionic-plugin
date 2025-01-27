@@ -5,36 +5,24 @@ import SwiftUI
 @objc public class SurveySparrowIonicPlugin: NSObject {
     
     @objc public func loadFullScreenSurvey(domain: String, token: String, params: [String: String],  properties: [String: Any]) {
-        FullScreenSurveyView(domain: domain, token: token, params: params, properties: properties)
+        DispatchQueue.main.async {
+            let ssSurveyViewController = SsSurveyViewController()
+            ssSurveyViewController.domain = domain
+            ssSurveyViewController.token = token
+            ssSurveyViewController.params = params
+            ssSurveyViewController.properties = properties
+            ssSurveyViewController.getSurveyLoadedResponse = true
+            ssSurveyViewController.surveyDelegate = SsDelegate()
+            
+            if let topViewController = UIApplication.shared.windows.first?.rootViewController {
+                topViewController.present(ssSurveyViewController, animated: true, completion: nil)
+            }
+        }
     }
     
     @objc public func loadFullScreenSurveyWithValidation(domain: String, token: String, params: [String: String],  properties: [String: Any]) {
         FullScreenSurveyWithValidation(domain: domain, token: token, properties: properties, params: params).startFullScreenSurveyWithValidation()
     }
-}
-
-struct FullScreenSurveyView: UIViewControllerRepresentable {
-    
-    var domain: String
-    var token: String
-    let params: [String: String]
-    let properties: [String: Any]
-    
-    @State private var isSurveyLoaded: Bool = false
-
-    func makeUIViewController(context: Context) -> SsSurveyViewController{
-        let ssSurveyViewController = SsSurveyViewController()
-        ssSurveyViewController.domain = domain
-        ssSurveyViewController.token = token
-        ssSurveyViewController.params = params
-        ssSurveyViewController.properties = properties
-        ssSurveyViewController.getSurveyLoadedResponse = true
-        ssSurveyViewController.surveyDelegate = SsDelegate()
-        return ssSurveyViewController
-    }
-
-    func updateUIViewController(_ uiViewController: SsSurveyViewController, context: Context) {}
-
 }
 
 struct FullScreenSurveyWithValidation {

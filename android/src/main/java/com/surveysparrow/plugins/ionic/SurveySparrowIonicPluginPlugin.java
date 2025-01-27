@@ -21,7 +21,7 @@ public class SurveySparrowIonicPluginPlugin extends Plugin {
     public void loadFullScreenSurvey(PluginCall call) {
         String domain = call.getString("domain");
         String token = call.getString("token");
-        CustomParam[] params = parseParams(call.getArray("params"));
+        CustomParam[] params = parseParams(call.getObject("params"));
         HashMap<String, String> properties = parseProperties(call.getObject("properties"));
 
         implementation.loadFullScreenSurvey(domain, token, params, properties);
@@ -32,28 +32,28 @@ public class SurveySparrowIonicPluginPlugin extends Plugin {
     public void loadFullScreenSurveyWithValidation(PluginCall call) {
         String domain = call.getString("domain");
         String token = call.getString("token");
-        CustomParam[] params = parseParams(call.getArray("params"));
+        CustomParam[] params = parseParams(call.getObject("params"));
         HashMap<String, String> properties = parseProperties(call.getObject("properties"));
 
         implementation.loadFullScreenSurveyWithValidation(domain, token, params, properties);
         call.resolve();
     }
 
-    private CustomParam[] parseParams(JSArray jsParams) {
-        if (jsParams == null || jsParams.length() == 0) {
+    private CustomParam[] parseParams(JSObject jsParams) {
+        if (jsParams == null || jsParams.keys().length == 0) {
             return new CustomParam[0];
         }
-
-        CustomParam[] params = new CustomParam[jsParams.length()];
-
-        for (int i = 0; i < jsParams.length(); i++) {
+    
+        String[] keys = jsParams.keys();
+        CustomParam[] params = new CustomParam[keys.length];
+    
+        for (int i = 0; i < keys.length; i++) {
             try {
-                JSObject paramObj = (JSObject) jsParams.get(i);
-                String key = paramObj.getString("key");
-                String value = paramObj.getString("value");
+                String key = keys[i];
+                String value = jsParams.getString(key);
                 params[i] = new CustomParam(key, value);
             } catch (JSONException e) {
-                throw new RuntimeException("Invalid parameter at index " + i, e);
+                throw new RuntimeException("Invalid parameter for key: " + keys[i], e);
             }
         }
 
