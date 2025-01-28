@@ -14,37 +14,37 @@ public class SurveySparrowIonicPluginPlugin: CAPPlugin, CAPBridgedPlugin {
     private let implementation = SurveySparrowIonicPlugin()
     
     @objc public func loadFullScreenSurvey(_ call: CAPPluginCall) {
-        
-        let domain = call.getString("domain")
-        let token = call.getString("token")
-        let params = call.getObject("params") as? [String : String]
-        let properties = call.getObject("properties")
-
-        guard let domain = domain, let token = token, let params = params, let properties = properties else {
-            call.reject("Invalid or missing parameters")
-            return
-        }
-
-        DispatchQueue.main.async {
-            self.implementation.loadFullScreenSurvey(domain: domain, token: token, params: params, properties: properties)
-        }
-    
+        handleFullScreenSurvey(call, withValidation: false)
     }
     
     @objc public func loadFullScreenSurveyWithValidation(_ call: CAPPluginCall) {
-
-        let domain = call.getString("domain")
-        let token = call.getString("token")
-        let params = call.getObject("params") as? [String : String]
-        let properties = call.getObject("properties")
-        
-        guard let domain = domain, let token = token, let params = params, let properties = properties else {
+        handleFullScreenSurvey(call, withValidation: true)
+    }
+    
+    private func handleFullScreenSurvey(_ call: CAPPluginCall, withValidation: Bool) {
+        guard
+            let domain = call.getString("domain"),
+            let token = call.getString("token"),
+            let params = call.getObject("params") as? [String: String],
+            var properties = call.getObject("properties")
+        else {
             call.reject("Invalid or missing parameters")
             return
         }
-
+        
+        if let langCode = properties["langCode"] {
+            properties["sparrowLang"] = langCode
+            properties.removeValue(forKey: "langCode")
+        } else {
+            properties["sparrowLang"] = "en"
+        }
+        
         DispatchQueue.main.async {
-            self.implementation.loadFullScreenSurveyWithValidation(domain: domain, token: token, params: params, properties: properties)
+            if withValidation {
+                self.implementation.loadFullScreenSurveyWithValidation(domain: domain, token: token, params: params, properties: properties)
+            } else {
+                self.implementation.loadFullScreenSurvey(domain: domain, token: token, params: params, properties: properties)
+            }
         }
     }
 }
