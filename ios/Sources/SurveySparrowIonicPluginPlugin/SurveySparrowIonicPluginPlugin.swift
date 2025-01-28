@@ -17,15 +17,16 @@ public class SurveySparrowIonicPluginPlugin: CAPPlugin, CAPBridgedPlugin {
         
         let domain = call.getString("domain")
         let token = call.getString("token")
+        let params = call.getObject("params") as? [String : String]
         let properties = call.getObject("properties")
 
-        guard let domain = domain, let token = token, let properties = properties else {
+        guard let domain = domain, let token = token, let params = params, let properties = properties else {
             call.reject("Invalid or missing parameters")
             return
         }
 
         DispatchQueue.main.async {
-            self.implementation.loadFullScreenSurvey(domain: domain, token: token, properties: properties)
+            self.implementation.loadFullScreenSurvey(domain: domain, token: token, params: params, properties: properties)
         }
     
     }
