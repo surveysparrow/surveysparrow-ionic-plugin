@@ -1,0 +1,39 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Survey Sparrow SDK
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Survey Sparrow SDK</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div id="container">
+    <ion-button (click)="loadSurvey()" class="custom-button">
+      <div class="button-content">
+        <div class="button-text">
+          Load FullScreen Survey
+        </div>
+        <div class="button-subtext">
+          ssSurveyView.loadFullscreenSurvey
+        </div>
+      </div>
+    </ion-button>
+
+    <ion-button (click)="loadSurveyWithValidation()" class="custom-button">
+      <div class="button-content">
+        <div class="button-text">
+          Load FullScreen Survey with Validation
+        </div>
+        <div class="button-subtext">
+          rootViewController.present(ssSurveyViewController)
+        </div>
+      </div>
+    </ion-button>
+  </div>
+</ion-content>

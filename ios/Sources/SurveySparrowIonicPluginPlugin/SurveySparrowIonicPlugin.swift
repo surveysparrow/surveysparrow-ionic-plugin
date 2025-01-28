@@ -10,6 +10,7 @@ import SwiftUI
             ssSurveyViewController.domain = domain
             ssSurveyViewController.token = token
             ssSurveyViewController.params = params
+            ssSurveyViewController.modalPresentationStyle = .fullScreen
             ssSurveyViewController.properties = properties
             ssSurveyViewController.getSurveyLoadedResponse = true
             ssSurveyViewController.surveyDelegate = SsDelegate()

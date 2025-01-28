@@ -209,6 +209,7 @@ import WebKit
         let ssSurveyViewController = SsSurveyViewController()
         ssSurveyViewController.domain = domain
         ssSurveyViewController.token = token
+        ssSurveyViewController.modalPresentationStyle = .fullScreen
         ssSurveyViewController.properties = self.properties ?? [:]
         if(params != nil){
             ssSurveyViewController.params = params ?? [:]

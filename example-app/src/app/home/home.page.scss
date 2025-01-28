@@ -1,0 +1,25 @@
+#container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.custom-button {
+    margin: 10px;
+}
+
+.button-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.button-text {
+    font-size: 16px;
+    font-variant-caps: small;
+}
+
+.button-subtext {
+    font-size: 10px;
+}
