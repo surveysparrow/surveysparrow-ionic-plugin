@@ -1,6 +1,6 @@
 {
   "name": "surveysparrow-ionic-plugin",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "SurveySparrow SDK enables you to collect feedback from your mobile app. Embed the Classic, Chat & NPS surveys in your ionic application seamlessly with few lines of code.",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
