@@ -65,8 +65,31 @@ loadFullScreenSurveyWithValidation(options: { domain: String; token: String; par
 | Param         | Type                                                                                                                                                                        |
 | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **`options`** | <code>{ domain: <a href="#string">String</a>; token: <a href="#string">String</a>; params: <a href="#object">Object</a>; properties: <a href="#object">Object</a>; }</code> |
-
 --------------------
+
+## Validations  
+
+Validations include **Limit Submission Per User** and **Survey Throttling**.  
+
+To achieve this, the **`emailaddress`** of the user must be passed in the `params` object.  
+
+## Params  
+
+The `params` object allows passing **survey variables**, which can be accessed in the survey's end-user interface. Ensure that the spelling of survey variables matches the configured values. Additionally, make sure to include the **`emailaddress`** field.  
+
+## Properties  
+
+The `properties` object includes the following parameters:  
+
+1. **`isCloseButtonEnabled`** (default: `true`)  
+   - If set to `false`, the close button will be removed.  
+   - **Note:** Disabling this option will also disable the close button inside the survey.  
+
+2. **`langcode`** (default: `en`)  
+   - To load the survey in a specific language, pass the corresponding language code.  
+   - Ensure that the language is configured in the SurveySparrow app.  
+   - A list of supported language codes can be found [here](https://docs.google.com/document/d/1cmmWJQba8B3UkV6g5m93DgpenVojclzeOB0mdn-rlrg/edit?usp=sharing).  
+
 
 ## Support
 For questions or issues, contact us at [support@surveysparrow.com](mailto:support@surveysparrow.com).
