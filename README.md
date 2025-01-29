@@ -75,7 +75,7 @@ To achieve this, the **`emailaddress`** of the user must be passed in the `param
 
 ## Params  
 
-The `params` object allows passing **survey variables**, which can be accessed in the survey's end-user interface. Ensure that the spelling of survey variables matches the configured values. Additionally, make sure to include the **`emailaddress`** field.  
+The `params` object allows passing **survey variables**, which can be accessed in the survey's end-user interface. Ensure that the spelling of survey variables matches the configured values. Additionally, make sure to include the **`emailaddress`** field for validations.  
 
 ## Properties  
 
@@ -83,7 +83,7 @@ The `properties` object includes the following parameters:
 
 1. **`isCloseButtonEnabled`** (default: `true`)  
    - If set to `false`, the close button will be removed.  
-   - **Note:** Disabling this option will also disable the close button inside the survey.  
+   - **Note:** Disabling this option will also disable the survey validation.  
 
 2. **`langcode`** (default: `en`)  
    - To load the survey in a specific language, pass the corresponding language code.  
