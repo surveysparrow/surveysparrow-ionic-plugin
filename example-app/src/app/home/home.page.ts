@@ -13,8 +13,8 @@ export class HomePage {
 
   loadSurvey() {    
     SurveySparrowIonicPlugin.loadFullScreenSurvey({
-      domain: "",
-      token: "",
+      domain: "gokulkrishnaraju1183.surveysparrow.com",
+      token: "tt-32cq05-zBS-",
       params: {"emailaddress": "test@gmail.com"},
       properties: {"langCode": "nl"}
     }).then(() => {
@@ -26,8 +26,8 @@ export class HomePage {
 
   loadSurveyWithValidation() {
     SurveySparrowIonicPlugin.loadFullScreenSurveyWithValidation({
-      domain: "",
-      token: "",
+      domain: "gokulkrishnaraju1183.surveysparrow.com",
+      token: "tt-32cq05-zBS-",
       params: {"emailaddress": "test@gmail.com"},
       properties: {"langCode": "nl"}
     }).then(() => {
