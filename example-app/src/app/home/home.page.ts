@@ -13,10 +13,10 @@ export class HomePage {
 
   loadSurvey() {    
     SurveySparrowIonicPlugin.loadFullScreenSurvey({
-      domain: "gokulkrishnaraju1183.surveysparrow.com",
-      token: "ntt-3gxSi3LDc42hSy7FESGYhQ",
-      params: {"email": "gk@ss.com", "emailaddress": "gokul@ss.com"},
-      properties: {"langCode": "ta"}
+      domain: "",
+      token: "",
+      params: {"emailaddress": "test@gmail.com"},
+      properties: {"langCode": "nl"}
     }).then(() => {
       console.log('Survey loaded successfully');
     }).catch((error) => {
@@ -26,10 +26,10 @@ export class HomePage {
 
   loadSurveyWithValidation() {
     SurveySparrowIonicPlugin.loadFullScreenSurveyWithValidation({
-      domain: "gokulkrishnaraju1183.surveysparrow.com",
-      token: "ntt-3gxSi3LDc42hSy7FESGYhQ",
-      params: {"email": "gokul@ss.com", "emailaddress": "gokul@ss.com"},
-      properties: {"langCode": "ta"}
+      domain: "",
+      token: "",
+      params: {"emailaddress": "test@gmail.com"},
+      properties: {"langCode": "nl"}
     }).then(() => {
       console.log('Survey loaded successfully');
     }).catch((error) => {

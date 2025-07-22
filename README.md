@@ -15,6 +15,17 @@ To use this plugin, ensure the following permissions are added to your app:
 
 ### Android
 
+Add this in your **root** `build.gradle` at the end of repositories:
+
+```gradle
+allprojects {
+  repositories {
+    ...
+    maven { url 'https://jitpack.io' }
+  }
+}
+```
+
 Add these permissions to your `AndroidManifest.xml`:
 
 ```xml

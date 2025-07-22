@@ -57,13 +57,20 @@ import WebKit
         let config = WKWebViewConfiguration()
         config.preferences.javaScriptEnabled = true
         config.userContentController = surveyResponseHandler
-        ssWebView = WKWebView(frame: bounds, configuration: config)
+        ssWebView = WKWebView(frame: .zero, configuration: config)
         surveyResponseHandler.add(self, name: "surveyResponse")
         ssWebView.navigationDelegate = self
         ssWebView.backgroundColor = .gray
         ssWebView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        ssWebView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(ssWebView)
         
+        NSLayoutConstraint.activate([
+            ssWebView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
+            ssWebView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
+            ssWebView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
+            ssWebView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor)
+        ])
         let isCloseButtonEnabled = properties?["isCloseButtonEnabled"] as? Bool
         
         if  isCloseButtonEnabled ?? true == true {
@@ -97,8 +104,10 @@ import WebKit
         ssWebView.addSubview(loader)
         ssWebView.navigationDelegate = self
         loader.translatesAutoresizingMaskIntoConstraints = false
-        loader.centerXAnchor.constraint(equalTo: ssWebView.centerXAnchor).isActive = true
-        loader.centerYAnchor.constraint(equalTo: ssWebView.centerYAnchor).isActive = true
+        NSLayoutConstraint.activate([
+            loader.centerXAnchor.constraint(equalTo: ssWebView.centerXAnchor),
+            loader.centerYAnchor.constraint(equalTo: ssWebView.centerYAnchor)
+        ])
         loader.hidesWhenStopped = true
     }
     
@@ -189,18 +198,14 @@ import WebKit
     }
     
     public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        if surveyDelegate != nil {
-            let response = message.body as! [String: AnyObject]
-            let responseType = response["type"] as! String
-            if(responseType == surveyLoaded){
-                if surveyDelegate != nil {
-                    surveyDelegate.handleSurveyLoaded(response: response)
-                }
-            }
-            if(responseType == surveyCompleted){
-                if surveyDelegate != nil {
-                    surveyDelegate.handleSurveyResponse(response: response)
-                }
+        if let surveyDelegate = surveyDelegate,
+           let response = message.body as? [String: AnyObject],
+           let responseType = response["type"] as? String {
+
+            if responseType == surveyLoaded {
+                surveyDelegate.handleSurveyLoaded(response: response)
+            } else if responseType == surveyCompleted {
+                surveyDelegate.handleSurveyResponse(response: response)
             }
         }
     }
