@@ -96,7 +96,7 @@ The `properties` object includes the following parameters:
    - If set to `false`, the close button will be removed.  
    - **Note:** Disabling this option will also disable the survey validation.  
 
-2. **`langcode`** (default: `en`)  
+2. **`langCode`** (default: `en`)  
    - To load the survey in a specific language, pass the corresponding language code.  
    - Ensure that the language is configured in the SurveySparrow app.  
    - A list of supported language codes can be found [here](https://docs.google.com/document/d/1cmmWJQba8B3UkV6g5m93DgpenVojclzeOB0mdn-rlrg/edit?usp=sharing).  
