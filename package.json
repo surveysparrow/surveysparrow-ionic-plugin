@@ -1,5 +1,5 @@
 {
-  "name": "gokulkrishna-react-native-sdk",
+  "name": "surveysparrow-ionic-plugin",
   "version": "1.0.7-beta.3",
   "description": "SurveySparrow SDK enables you to collect feedback from your mobile app. Embed the Classic, Chat & NPS surveys in your ionic application seamlessly with few lines of code.",
   "main": "dist/plugin.cjs.js",
