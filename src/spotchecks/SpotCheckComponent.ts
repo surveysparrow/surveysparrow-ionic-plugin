@@ -7,7 +7,6 @@ import {
   ElementRef,
   AfterViewInit,
   HostListener,
-  ChangeDetectorRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
