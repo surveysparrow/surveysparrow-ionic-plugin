@@ -1,16 +1,6 @@
 import { InitializeSpotChecksProps, TrackEventProps, TrackScreenProps } from './types';
 import { sendTrackScreenRequest, sendTrackEventRequest } from './api';
-import { Component } from '@angular/core';
-import { SpotCheckComponent } from './SpotCheckComponent';
 import { getSpotcheckStateService } from './helpers';
-
-@Component({
-  selector: 'SpotCheck',
-  template: `<SpotCheckComponent />`,
-  standalone: true,
-  imports: [SpotCheckComponent],
-})
-export class SpotCheck {}
 
 export const initializeSpotChecks = ({
   domainName,

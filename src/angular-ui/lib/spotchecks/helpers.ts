@@ -133,14 +133,9 @@ export const setAppearance = async (
         const themeInfo = response.data.config.generatedCSS;
         const theme_payload = { type: 'THEME_UPDATE_SPOTCHECK', themeInfo };
         state = spotcheckStateService.getState();
-        const getWebViewRef = () =>
-          chat ? state.chatWebViewRef : state.classicWebViewRef;
 
-        const getIsLoading = () =>
-          chat ? state.isChatLoading : state.isClassicLoading;
-
-        let webViewRef = getWebViewRef();
-        let isLoading = getIsLoading();
+        let webViewRef = chat ? state.chatWebViewRef : state.classicWebViewRef;
+        let isLoading = chat ? state.isChatLoading : state.isClassicLoading;
 
         const resetStateData = {
           type: 'RESET_STATE',
@@ -169,17 +164,21 @@ export const setAppearance = async (
           }
         };
 
-        const communicateWithWebView = (iframe: HTMLIFrameElement) => {
-          sendMessageToIframe(iframe, resetStateData);
-          sendMessageToIframe(iframe, theme_payload);
+        const communicateWithWebView = async (iframe: HTMLIFrameElement) => {
+          await new Promise(resolve => setTimeout(() => {
+            sendMessageToIframe(iframe, resetStateData);
+            sendMessageToIframe(iframe, theme_payload);
+            resolve(true);
+          }, 2000));
         };
 
         if (webViewRef) {
-          if (!isLoading) {
+          if (isLoading === false) {
             communicateWithWebView(webViewRef);
             start();
             return true;
           } else {
+            // todo: recheck this
             const unsubscribe = spotcheckStateService.state$.subscribe(
               (currentState) => {
                 const {
@@ -242,7 +241,7 @@ export const setAppearance = async (
 
 export const start = () => {
   const state = getSpotcheckStateService().getState();
-  setTimeout(async () => {
+  setTimeout(() => {
     getSpotcheckStateService().setState({ isVisible: true });
   }, state.afterDelay * 1000);
 };

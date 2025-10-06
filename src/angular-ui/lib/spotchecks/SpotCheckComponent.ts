@@ -36,8 +36,6 @@ import { SpotcheckStateService } from './SpotcheckStateService';
 export class WebViewComponent implements OnInit, AfterViewInit {
   @Input() url: string = '';
   @Input() webviewType: 'classic' | 'chat' = 'classic';
-  // @Input() height: number = window.innerHeight * 0.5;
-  // @Input() width: number = window.innerWidth;
 
   safeUrl: SafeResourceUrl | null = null;
   @ViewChild('iframeRef') iframe!: ElementRef<HTMLIFrameElement>;
