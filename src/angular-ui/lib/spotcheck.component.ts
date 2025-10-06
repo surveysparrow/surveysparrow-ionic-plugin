@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { SpotCheckComponent } from '../../spotchecks/SpotCheckComponent';
+import { SpotCheckComponent } from './spotchecks/SpotCheckComponent';
 
 @Component({
   selector: 'SpotCheck',

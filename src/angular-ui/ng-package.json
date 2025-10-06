@@ -4,6 +4,10 @@
     "lib": {
       "entryFile": "lib/public-api.ts"
     },
-    "allowedNonPeerDependencies": []
+    "allowedNonPeerDependencies": [
+      "uuid",
+      "axios",
+      "@capacitor/device"
+    ]
   }
   

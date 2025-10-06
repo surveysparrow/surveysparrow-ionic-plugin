@@ -1,3 +1,5 @@
+import { nodeResolve } from '@rollup/plugin-node-resolve';
+
 export default {
   input: 'dist/esm/index.js',
   output: [
@@ -7,6 +9,9 @@ export default {
       name: 'capacitorSurveySparrowIonicPlugin2',
       globals: {
         '@capacitor/core': 'capacitorExports',
+        'axios': 'axios',
+        'uuid': 'uuid',
+        '@capacitor/device': 'capacitorDevice',
       },
       sourcemap: true,
       inlineDynamicImports: true,
@@ -18,5 +23,6 @@ export default {
       inlineDynamicImports: true,
     },
   ],
-  external: ['@capacitor/core'],
+  external: ['@capacitor/core', 'axios', 'uuid', '@capacitor/device'],
+  plugins: [nodeResolve()],
 };
