@@ -1,1 +1,1 @@
-export * from './feedback-button.component';
+export * from './spotcheck.component';

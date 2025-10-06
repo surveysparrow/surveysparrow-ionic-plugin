@@ -6,5 +6,6 @@ const SurveySparrowIonicPlugin2 = registerPlugin<SurveySparrowIonicPlugin2Plugin
   web: () => import('./web').then((m) => new m.SurveySparrowIonicPlugin2Web()),
 });
 
+export * from './spotchecks';
 export * from './definitions';
 export { SurveySparrowIonicPlugin2 };
