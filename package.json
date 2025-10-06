@@ -1,10 +1,11 @@
 {
-  "name": "surveysparrow-ionic-plugin-2",
-  "version": "0.0.1",
+  "name": "my-lib-siva2207",
+  "version": "0.0.33",
   "description": "SurveySparrow SDK enables you to collect feedback from your mobile app. Embed the Classic, Chat & NPS surveys in your ionic application seamlessly with few lines of code.",
-  "main": "dist/plugin.cjs.js",
-  "module": "dist/esm/index.js",
-  "types": "dist/esm/index.d.ts",
+  "type": "module",
+  "main": "./dist/esm/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
   "unpkg": "dist/plugin.js",
   "files": [
     "android/src/main/",
@@ -13,8 +14,22 @@
     "ios/Sources",
     "ios/Tests",
     "Package.swift",
-    "SurveysparrowIonicPlugin2.podspec"
+    "SurveysparrowIonicPlugin2.podspec",
+    "dist/capacitor",
+    "dist/angular-ui",
+    "capacitor",
+    "src"
   ],
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js",
+      "types": "./dist/esm/index.d.ts"
+    },
+    "./angular-ui": {
+      "import": "./dist/angular-ui/fesm2022/my-lib-siva2207-angular-ui.mjs",
+      "types": "./dist/angular-ui/index.d.ts"
+    }
+  },
   "author": "SurveySparrow",
   "license": "MIT",
   "repository": {
@@ -27,7 +42,9 @@
   "keywords": [
     "capacitor",
     "plugin",
-    "native"
+    "native",
+    "ionic",
+    "angular"
   ],
   "scripts": {
     "verify": "npm run verify:ios && npm run verify:android && npm run verify:web",
@@ -40,10 +57,10 @@
     "prettier": "prettier \"**/*.{css,html,ts,js,java}\" --plugin=prettier-plugin-java",
     "swiftlint": "node-swiftlint",
     "docgen": "docgen --api SurveySparrowIonicPlugin2Plugin --output-readme README.md --output-json dist/docs.json",
-    "build": "npm run clean && npm run docgen && tsc && rollup -c rollup.config.mjs",
+    "build": "npm run clean && npm run docgen && npx ng-packagr -p src/angular-ui/ng-package.json && tsc && rollup -c rollup.config.mjs",
+    "prepublishOnly": "npm run build",
     "clean": "rimraf ./dist",
-    "watch": "tsc --watch",
-    "prepublishOnly": "npm run build"
+    "watch": "tsc --watch"
   },
   "devDependencies": {
     "@capacitor/android": "^7.0.0",
@@ -54,15 +71,25 @@
     "@ionic/prettier-config": "^4.0.0",
     "@ionic/swiftlint-config": "^2.0.0",
     "eslint": "^8.57.0",
+    "ng-packagr": "^16.2.3",
     "prettier": "^3.4.2",
     "prettier-plugin-java": "^2.6.6",
     "rimraf": "^6.0.1",
     "rollup": "^4.30.1",
     "swiftlint": "^2.0.0",
-    "typescript": "~4.1.5"
+    "typescript": "5.1"
   },
   "peerDependencies": {
-    "@capacitor/core": ">=7.0.0"
+    "@capacitor/core": ">=7.0.0",
+    "@ionic/angular": "^8.7.5",
+    "@angular/core": ">=16.0.0",
+    "@angular/common": ">=16.0.0",
+    "@angular/forms": ">=16.0.0",
+    "@angular/platform-browser": ">=16.0.0",
+    "@angular/router": ">=16.0.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
   },
   "prettier": "@ionic/prettier-config",
   "swiftlint": "@ionic/swiftlint-config",
