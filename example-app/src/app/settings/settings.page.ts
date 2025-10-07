@@ -9,31 +9,32 @@ import {
 
 import {
   trackScreen,
-  trackEvent,
+  trackEvent
 } from 'surveysparrow-ionic-plugin/angular-ui';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: 'home.page.html',
-  styleUrls: ['home.page.scss'],
+  selector: 'app-settings',
+  templateUrl: 'settings.page.html',
+  styleUrls: ['settings.page.scss'],
   imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonButton],
 })
-export class HomePage implements OnInit {
+export class SettingsPage implements OnInit {
+
   constructor(private router: Router) {}
 
   ngOnInit() {
-    this.trackHomeScreen();
+    this.trackSettingsScreen();
   }
 
-  private async trackHomeScreen() {
+  private async trackSettingsScreen() {
     try {
       await trackScreen({
-        screen: 'HomeScreen',
+        screen: 'SettingsScreen',
         options: {
           variables: {
             sparrowLang: 'en',
-            pageType: 'home',
+            pageType: 'settings',
             asdasdasd: "VARIABLE_VALUE"
           },
           userDetails: {
@@ -42,26 +43,27 @@ export class HomePage implements OnInit {
         },
       });
     } catch (error) {
-      console.log('Error tracking home screen:', error);
+      console.log('Error tracking settings screen:', error);
     }
   }
 
-  public async trackHomeEvent() {
+  // this can be added/called in any button clicks 
+  public async trackSettingsEvent() {
     try {
       await trackEvent({
-        screen: 'HomeScreen',
+        screen: 'SettingsScreen',
         event: {
-          HomeEvent: {
+          SettingsEvent: {
             eventTriggeredOn: Date.now().toString(),
           },
         },
       });
     } catch (error) {
-      console.error('Error tracking home event:', JSON.stringify(error));
+      console.error('Error tracking settings event:', JSON.stringify(error));
     }
   }
 
-  public navigateToSettings() {
-    this.router.navigate(['/settings']);
+  public navigateToHome() {
+    this.router.navigate(['/home']);
   }
 }
