@@ -6,5 +6,3 @@ const SurveySparrowIonicPlugin = registerPlugin<SurveySparrowIonicPluginPlugin>(
 
 export * from './definitions';
 export { SurveySparrowIonicPlugin };
-
-export * from './spotchecks/lib/public-api';

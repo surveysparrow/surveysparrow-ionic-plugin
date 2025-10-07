@@ -1,7 +1,8 @@
 {
   "name": "surveysparrow-ionic-plugin",
-  "version": "1.0.7-beta.5",
+  "version": "1.0.7-beta.6",
   "description": "SurveySparrow SDK enables you to collect feedback from your mobile app. Embed the Classic, Chat & NPS surveys in your ionic application seamlessly with few lines of code.",
+  "type": "module",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
@@ -13,7 +14,11 @@
     "ios/Sources",
     "ios/Tests",
     "Package.swift",
-    "SurveysparrowIonicPlugin.podspec"
+    "SurveysparrowIonicPlugin.podspec",
+    "dist/capacitor",
+    "dist/angular-ui",
+    "capacitor",
+    "src"
   ],
   "exports": {
     ".": {
@@ -21,8 +26,10 @@
       "types": "./dist/esm/index.d.ts"
     },
     "./angular-ui": {
-      "import": "./dist/angular-ui/fesm2022/spotchecks-ui.mjs",
-      "types": "./dist/angular-ui/index.d.ts"
+      "types": "./dist/angular-ui/index.d.ts",
+      "esm2022": "./dist/angular-ui/esm2022/spotchecks-ui.mjs",
+      "esm": "./dist/angular-ui/esm2022/spotchecks-ui.mjs",
+      "default": "./dist/angular-ui/fesm2022/spotchecks-ui.mjs"
     }
   },
   "author": "Gokulkrishna-Raju",
@@ -37,7 +44,9 @@
   "keywords": [
     "capacitor",
     "plugin",
-    "native"
+    "native",
+    "ionic",
+    "angular"
   ],
   "scripts": {
     "verify": "npm run verify:ios && npm run verify:android && npm run verify:web",
@@ -50,13 +59,15 @@
     "prettier": "prettier \"**/*.{css,html,ts,js,java}\" --plugin=prettier-plugin-java",
     "swiftlint": "node-swiftlint",
     "docgen": "docgen --api SurveySparrowIonicPluginPlugin --output-readme README.md --output-json dist/docs.json",
-    "build": "npm run clean && npm run docgen && npx ng-packagr -p src/spotchecks/ng-package.json && tsc && rollup -c rollup.config.mjs",
+    "build": "npm run clean && npm run docgen && npx ng-packagr -p src/angular-ui/ng-package.json && tsc && rollup -c rollup.config.mjs",
     "clean": "rimraf ./dist",
     "watch": "tsc --watch",
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
     "@angular/common": "^20.3.2",
+    "@angular/compiler": "^20.3.2",
+    "@angular/compiler-cli": "^20.3.2",
     "@angular/core": "^20.3.2",
     "@angular/platform-browser": "^20.3.2",
     "@capacitor/android": "^7.0.0",
@@ -71,6 +82,7 @@
     "@rollup/plugin-node-resolve": "^16.0.1",
     "axios": "^1.12.2",
     "eslint": "^8.57.0",
+    "ng-packagr": "^18.2.1",
     "prettier": "^3.4.2",
     "prettier-plugin-java": "^2.6.6",
     "rimraf": "^6.0.1",
@@ -97,6 +109,10 @@
     }
   },
   "dependencies": {
+    "@capacitor/device": "^7.0.2",
+    "axios": "^1.12.2",
+    "tslib": "^2.3.0",
+    "uuid": "^13.0.0",
     "@types/node": "^24.5.2"
   }
 }

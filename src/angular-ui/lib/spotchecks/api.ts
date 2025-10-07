@@ -1,7 +1,7 @@
-import { generateTraceId, getOS, setAppearance } from '.';
+import { generateTraceId, getOS, setAppearance } from './helpers';
 import { getStoredUUID, setUUID } from './storage';
-import { TrackScreenProps, UserDetails, Variables, CustomProperties, TrackEventProps } from '../helpers/types';
-import { getSpotcheckStateService } from '.';
+import { TrackScreenProps, UserDetails, Variables, CustomProperties, TrackEventProps } from './types';
+import { getSpotcheckStateService } from './helpers';
 import axios from 'axios';
 
 export const sendTrackScreenRequest = async ({

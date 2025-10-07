@@ -6,7 +6,7 @@ export default {
     {
       file: 'dist/plugin.js',
       format: 'iife',
-      name: 'capacitorSurveySparrowIonicPlugin2',
+      name: 'capacitorSurveySparrowIonicPlugin',
       globals: {
         '@capacitor/core': 'capacitorExports',
         'axios': 'axios',

@@ -1,6 +1,6 @@
 import { InitializeSpotChecksProps, TrackEventProps, TrackScreenProps } from './types';
-import { sendTrackScreenRequest, sendTrackEventRequest } from '../services/api';
-import { getSpotcheckStateService } from '../services';
+import { sendTrackScreenRequest, sendTrackEventRequest } from './api';
+import { getSpotcheckStateService } from './helpers';
 
 export const initializeSpotChecks = ({
   domainName,
