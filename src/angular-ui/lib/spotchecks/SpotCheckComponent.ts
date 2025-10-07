@@ -11,11 +11,11 @@ import {
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import axios from 'axios';
-import { closeSpotCheck, closeSpotCheckAndHandleSurveyEnd, getSpotcheckComponentCssStyles, getSpotchecksListener, handleSurveyEnd, ischatSurvey } from './helpers';
+import { closeSpotCheck, closeSpotCheckAndHandleSurveyEnd, getSpotcheckComponentCssStyles, handleSurveyEnd, ischatSurvey } from './helpers';
 import { SpotcheckState } from './types';
 import { getSpotcheckStateService } from './helpers';
 import { SpotcheckStateService } from './SpotcheckStateService';
+import axios from 'axios';
 
 @Component({
   selector: 'WebViewComponent',
@@ -80,7 +80,6 @@ export class WebViewComponent implements OnInit, AfterViewInit {
   @HostListener('window:message', ['$event'])
   onMessage(event: MessageEvent) {
     const stateService = getSpotcheckStateService();
-    const spotchecksListener = getSpotchecksListener();
     const { data } = event;
     switch (data.type) {
       case 'slideInFrame':
@@ -103,11 +102,11 @@ export class WebViewComponent implements OnInit, AfterViewInit {
 
       case 'surveyCompleted':
         closeSpotCheckAndHandleSurveyEnd();
-        spotchecksListener.emitSurveyCompleted(data.response);
+        // spotchecksListener.emitSurveyCompleted(data.response);
         break;
 
       case 'surveyLoadStarted':
-        spotchecksListener.emitSurveyLoadStarted(data.surveyDetails);
+        // spotchecksListener.emitSurveyLoadStarted(data.surveyDetails);
         break;
 
       default:

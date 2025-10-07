@@ -1,5 +1,5 @@
 {
-    "name": "my-lib-siva2207-angular-ui",
+    "name": "surveysparrow-ionic-plugin-angular-ui",
     "version": "0.0.1",
     "peerDependencies": {
       "@angular/core": "^16.0.0",
