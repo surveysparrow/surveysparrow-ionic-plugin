@@ -1,0 +1,13 @@
+{
+    "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
+    "dest": "../../dist/angular-ui",
+    "lib": {
+      "entryFile": "lib/public-api.ts"
+    },
+    "allowedNonPeerDependencies": [
+      "uuid",
+      "axios",
+      "@capacitor/device"
+    ]
+  }
+  

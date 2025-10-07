@@ -4,13 +4,13 @@
       <spotcheck-close-button />
   
       <WebViewComponent
-        *ngIf="state.classicUrl && state.classicUrl.length > 0"
+        *ngIf="state.classicUrl && state.classicUrl.length > 0 && state.spotcheckURL.length > 0 && state.spotCheckType === 'classic'"
         [url]="state.classicUrl"
         [webviewType]="'classic'"
       />
   
       <WebViewComponent
-        *ngIf="state.chatUrl && state.chatUrl.length > 0"
+        *ngIf="state.chatUrl && state.chatUrl.length > 0 && state.spotcheckURL.length > 0 && state.spotCheckType === 'chat'"
         [url]="state.chatUrl"
         [webviewType]="'chat'"
       />

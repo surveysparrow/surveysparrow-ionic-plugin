@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { SpotcheckState } from './types';
+import { SpotcheckState } from '../helpers/types';
 
 @Injectable({
   providedIn: 'root',

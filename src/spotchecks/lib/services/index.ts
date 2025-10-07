@@ -1,25 +1,16 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Device } from '@capacitor/device';
-import { SpotcheckState } from './types';
+import { SpotcheckState } from '../helpers/types';
 import axios from 'axios';
 import { SpotcheckStateService } from './SpotcheckStateService';
-import { SpotchecksListener } from './SpotchecksListener';
 
 let globalSpotcheckStateService: SpotcheckStateService;
-let globalSpotchecksListener: SpotchecksListener;
 
 export const getSpotcheckStateService = (): SpotcheckStateService => {
   if (!globalSpotcheckStateService) {
     globalSpotcheckStateService = new SpotcheckStateService();
   }
   return globalSpotcheckStateService;
-};
-
-export const getSpotchecksListener = (): SpotchecksListener => {
-  if (!globalSpotchecksListener) {
-    globalSpotchecksListener = new SpotchecksListener();
-  }
-  return globalSpotchecksListener;
 };
 
 export function generateTraceId() {
@@ -133,14 +124,9 @@ export const setAppearance = async (
         const themeInfo = response.data.config.generatedCSS;
         const theme_payload = { type: 'THEME_UPDATE_SPOTCHECK', themeInfo };
         state = spotcheckStateService.getState();
-        const getWebViewRef = () =>
-          chat ? state.chatWebViewRef : state.classicWebViewRef;
 
-        const getIsLoading = () =>
-          chat ? state.isChatLoading : state.isClassicLoading;
-
-        let webViewRef = getWebViewRef();
-        let isLoading = getIsLoading();
+        let webViewRef = chat ? state.chatWebViewRef : state.classicWebViewRef;
+        let isLoading = chat ? state.isChatLoading : state.isClassicLoading;
 
         const resetStateData = {
           type: 'RESET_STATE',
@@ -169,17 +155,21 @@ export const setAppearance = async (
           }
         };
 
-        const communicateWithWebView = (iframe: HTMLIFrameElement) => {
-          sendMessageToIframe(iframe, resetStateData);
-          sendMessageToIframe(iframe, theme_payload);
+        const communicateWithWebView = async (iframe: HTMLIFrameElement) => {
+          await new Promise(resolve => setTimeout(() => {
+            sendMessageToIframe(iframe, resetStateData);
+            sendMessageToIframe(iframe, theme_payload);
+            resolve(true);
+          }, 2000));
         };
 
         if (webViewRef) {
-          if (!isLoading) {
+          if (isLoading === false) {
             communicateWithWebView(webViewRef);
             start();
             return true;
           } else {
+            // todo: recheck this
             const unsubscribe = spotcheckStateService.state$.subscribe(
               (currentState) => {
                 const {
@@ -242,7 +232,7 @@ export const setAppearance = async (
 
 export const start = () => {
   const state = getSpotcheckStateService().getState();
-  setTimeout(async () => {
+  setTimeout(() => {
     getSpotcheckStateService().setState({ isVisible: true });
   }, state.afterDelay * 1000);
 };
@@ -317,6 +307,7 @@ export const handleSurveyEnd = () => {
 export const getSpotcheckComponentCssStyles = (state: SpotcheckState) => { 
   let styles = {}
   let wrapperStyles = {}
+  let padding = 30;
   if (state.isFullScreenMode && state.isVisible) {
     wrapperStyles = {
       display: 'flex',
@@ -332,6 +323,7 @@ export const getSpotcheckComponentCssStyles = (state: SpotcheckState) => {
 
     let height = Math.min(state.currentQuestionHeight, (state.maxHeight * window.innerHeight));
     if(state.spotChecksMode === 'miniCard') {
+      padding = 45;
       if(state.avatarEnabled) {
         height = height - 56;
       }
@@ -390,6 +382,8 @@ export const getSpotcheckComponentCssStyles = (state: SpotcheckState) => {
       zIndex: '99999999',
       display: 'none',
       flexDirection: 'column',
+      paddingTop: padding+'px',
+      paddingBottom: padding+'px',
       ...wrapperStyles
     },
     styles: {

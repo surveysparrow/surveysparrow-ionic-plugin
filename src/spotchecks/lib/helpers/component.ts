@@ -11,11 +11,10 @@ import {
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import axios from 'axios';
-import { closeSpotCheck, closeSpotCheckAndHandleSurveyEnd, getSpotcheckComponentCssStyles, getSpotchecksListener, handleSurveyEnd, ischatSurvey } from './helpers';
+import { closeSpotCheck, closeSpotCheckAndHandleSurveyEnd, handleSurveyEnd } from '../services';
 import { SpotcheckState } from './types';
-import { getSpotcheckStateService } from './helpers';
-import { SpotcheckStateService } from './SpotcheckStateService';
+import { getSpotcheckStateService } from '../services';
+import { SpotcheckStateService } from '../services/SpotcheckStateService';
 
 @Component({
   selector: 'WebViewComponent',
@@ -36,8 +35,6 @@ import { SpotcheckStateService } from './SpotcheckStateService';
 export class WebViewComponent implements OnInit, AfterViewInit {
   @Input() url: string = '';
   @Input() webviewType: 'classic' | 'chat' = 'classic';
-  // @Input() height: number = window.innerHeight * 0.5;
-  // @Input() width: number = window.innerWidth;
 
   safeUrl: SafeResourceUrl | null = null;
   @ViewChild('iframeRef') iframe!: ElementRef<HTMLIFrameElement>;
@@ -82,7 +79,6 @@ export class WebViewComponent implements OnInit, AfterViewInit {
   @HostListener('window:message', ['$event'])
   onMessage(event: MessageEvent) {
     const stateService = getSpotcheckStateService();
-    const spotchecksListener = getSpotchecksListener();
     const { data } = event;
     switch (data.type) {
       case 'slideInFrame':
@@ -105,11 +101,11 @@ export class WebViewComponent implements OnInit, AfterViewInit {
 
       case 'surveyCompleted':
         closeSpotCheckAndHandleSurveyEnd();
-        spotchecksListener.emitSurveyCompleted(data.response);
+        // spotchecksListener.emitSurveyCompleted(data.response);
         break;
 
       case 'surveyLoadStarted':
-        spotchecksListener.emitSurveyLoadStarted(data.surveyDetails);
+        // spotchecksListener.emitSurveyLoadStarted(data.surveyDetails);
         break;
 
       default:
@@ -206,89 +202,5 @@ export class CloseButtonComponent implements OnDestroy {
   onClick = async () => {
     await closeSpotCheck();
     handleSurveyEnd();
-  };
-}
-
-@Component({
-  selector: 'SpotCheckComponent',
-  templateUrl: './SpotCheckComponent.html',
-  standalone: true,
-  imports: [CommonModule, WebViewComponent, CloseButtonComponent],
-})
-export class SpotCheckComponent implements OnInit, OnDestroy {
-  state: SpotcheckState;
-  private spotcheckStateService: SpotcheckStateService;
-  private stateSubscription: Subscription;
-  componentStyles: any = {};
-  avatarUrl: string = '';
-
-  constructor() {
-    this.spotcheckStateService = getSpotcheckStateService();
-    this.state = this.spotcheckStateService.getState();
-    this.updateComponentStyles();
-
-    this.stateSubscription = this.spotcheckStateService.state$.subscribe(
-      (newState: SpotcheckState) => {
-        this.state = newState;
-        this.updateComponentStyles();
-        this.avatarUrl = this.state.avatarUrl || "https://static.surveysparrow.com/application/images/profile.png";
-      }
-    );
-  }
-
-  ngOnInit(): void {
-    this.initializeComponent();
-  }
-
-  ngOnDestroy(): void {
-    if (this.stateSubscription) {
-      this.stateSubscription.unsubscribe();
-    }
-  }
-
-  private updateComponentStyles(): void {
-    this.componentStyles = getSpotcheckComponentCssStyles(this.state);
-  }
-
-  initializeComponent = async () => {
-    try {
-      const domainName = this.state.domainName;
-      const targetToken = this.state.targetToken;
-      const response = await axios.get(
-        `https://${domainName}/api/internal/spotcheck/widget/${targetToken}/init`
-      );
-      const data = response.data;
-
-      if (data.filteredSpotChecks && data.filteredSpotChecks.length > 0) {
-        let classicIframe = false;
-        let chatIframe = false;
-
-        data.filteredSpotChecks.forEach((spotcheck: any) => {
-          if (
-            spotcheck.appearance.mode === 'fullScreen' &&
-            ischatSurvey(spotcheck?.survey?.surveyType)
-          ) {
-            chatIframe = true;
-          } else {
-            classicIframe = true;
-          }
-        });
-
-        const newClassicUrl = classicIframe
-          ? `https://${domainName}/eui-template/classic`
-          : '';
-        const newChatUrl = chatIframe
-          ? `https://${domainName}/eui-template/chat`
-          : '';
-
-        this.spotcheckStateService.setState({
-          filteredSpotChecks: data.filteredSpotChecks,
-          classicUrl: newClassicUrl,
-          chatUrl: newChatUrl,
-        });
-      }
-    } catch (error) {
-      console.log('Error initializing widget:', JSON.stringify(error));
-    }
   };
 }
