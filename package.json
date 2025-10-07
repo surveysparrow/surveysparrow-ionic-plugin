@@ -21,7 +21,7 @@
       "types": "./dist/esm/index.d.ts"
     },
     "./angular-ui": {
-      "import": "./dist/angular-ui/fesm2022/my-lib-siva2207-angular-ui.mjs",
+      "import": "./dist/angular-ui/fesm2022/spotchecks-ui.mjs",
       "types": "./dist/angular-ui/index.d.ts"
     }
   },
@@ -50,7 +50,7 @@
     "prettier": "prettier \"**/*.{css,html,ts,js,java}\" --plugin=prettier-plugin-java",
     "swiftlint": "node-swiftlint",
     "docgen": "docgen --api SurveySparrowIonicPluginPlugin --output-readme README.md --output-json dist/docs.json",
-    "build": "npm run clean && npm run docgen && tsc && rollup -c rollup.config.mjs",
+    "build": "npm run clean && npm run docgen && npx ng-packagr -p src/spotchecks/ng-package.json && tsc && rollup -c rollup.config.mjs",
     "clean": "rimraf ./dist",
     "watch": "tsc --watch",
     "prepublishOnly": "npm run build"
