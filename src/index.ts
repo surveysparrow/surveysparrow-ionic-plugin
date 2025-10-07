@@ -6,3 +6,5 @@ const SurveySparrowIonicPlugin = registerPlugin<SurveySparrowIonicPluginPlugin>(
 
 export * from './definitions';
 export { SurveySparrowIonicPlugin };
+
+export * from './angular-ui/lib/public-api';

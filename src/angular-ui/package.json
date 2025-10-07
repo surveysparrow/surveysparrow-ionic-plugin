@@ -1,6 +1,6 @@
 {
-    "name": "spotchecks-ui",
-    "version": "1.0.7-beta.6",
+    "name": "angular-ui",
+    "version": "1.0.7-beta.15",
     "peerDependencies": {
       "@angular/core": "^16.0.0",
       "@angular/common": "^16.0.0",
