@@ -15,13 +15,13 @@ export const sendTrackScreenRequest = async ({
     let customProperties = {} as CustomProperties;
     let userDetails = {} as UserDetails;    
 
-    if (options.variables && Object.keys(options.variables).length > 0) {
+    if (options && options.variables && Object.keys(options.variables).length > 0) {
       variables = { ...oldState.variables, ...options.variables };
     }
-    if (options.customProperties && Object.keys(options.customProperties).length > 0) {
+    if (options && options.customProperties && Object.keys(options.customProperties).length > 0) {
       customProperties = { ...oldState.customProperties, ...options.customProperties };
     }
-    if (options.userDetails && Object.keys(options.userDetails).length > 0) {
+    if (options && options.userDetails && Object.keys(options.userDetails).length > 0) {
       userDetails = { ...oldState.userDetails, ...options.userDetails };
     }
 

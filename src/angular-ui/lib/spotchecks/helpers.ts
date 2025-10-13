@@ -224,7 +224,7 @@ export const setAppearance = async (
         throw new Error(error.message);
       }
     }
-    throw new Error('212');
+    throw new Error('Something went wrong');
   } catch (error: any) {
     throw new Error(error.message);
   }

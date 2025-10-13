@@ -58,7 +58,7 @@ export interface CustomProperties {
 
 export interface TrackScreenProps {
   screen: string;
-  options: {
+  options?: {
     variables?: Variables;
     customProperties?: CustomProperties;
     userDetails?: UserDetails;
@@ -77,7 +77,7 @@ export interface TrackEventProps {
 export interface InitializeSpotChecksProps {
   domainName: string;
   targetToken: string;
-  userDetails: UserDetails;
-  variables: Variables;
-  customProperties: CustomProperties;
+  userDetails?: UserDetails;
+  variables?: Variables;
+  customProperties?: CustomProperties;
 }
