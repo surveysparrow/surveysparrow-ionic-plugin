@@ -11,18 +11,18 @@ export const sendTrackScreenRequest = async ({
   try {
     const spotcheckStateService = getSpotcheckStateService();
     const oldState = spotcheckStateService.getState();
-    let variables = {} as Variables;
-    let customProperties = {} as CustomProperties;
-    let userDetails = {} as UserDetails;    
+    let variables = { ...oldState.variables } as Variables;
+    let customProperties = { ...oldState.customProperties } as CustomProperties;
+    let userDetails = { ...oldState.userDetails } as UserDetails;    
 
     if (options && options.variables && Object.keys(options.variables).length > 0) {
-      variables = { ...oldState.variables, ...options.variables };
+      variables = { ...variables, ...options.variables };
     }
     if (options && options.customProperties && Object.keys(options.customProperties).length > 0) {
-      customProperties = { ...oldState.customProperties, ...options.customProperties };
+      customProperties = { ...customProperties, ...options.customProperties };
     }
     if (options && options.userDetails && Object.keys(options.userDetails).length > 0) {
-      userDetails = { ...oldState.userDetails, ...options.userDetails };
+      userDetails = { ...userDetails, ...options.userDetails };
     }
 
     let traceId = oldState.traceId;
@@ -39,17 +39,17 @@ export const sendTrackScreenRequest = async ({
 
     spotcheckStateService.setState({
       traceId,
-      variables,
-      customProperties,
-      userDetails,
+      screenwiseUserDetails: {
+        [screen]: userDetails
+      },
     });
 
     const state = spotcheckStateService.getState();
     let { isSpotPassed, isChecksPassed } = state;
     const payload = {
       screenName: screen,
-      variables: state.variables,
-      userDetails: state.userDetails,
+      variables: variables,
+      userDetails: userDetails,
       visitor: {
         deviceType: 'MOBILE',
         operatingSystem: await getOS(),
@@ -61,7 +61,7 @@ export const sendTrackScreenRequest = async ({
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       },
       traceId: state.traceId,
-      customProperties: state.customProperties,
+      customProperties: customProperties,
     };
 
     const url = `https://${state.domainName}/api/internal/spotcheck/widget/${state.targetToken}/properties?isSpotCheck=true`;
@@ -85,7 +85,7 @@ export const sendTrackScreenRequest = async ({
             screen,
             state.domainName,
             traceId,
-            state.variables
+            variables
           );
           if (appearance_response) {
             isSpotPassed = true;
@@ -112,7 +112,7 @@ export const sendTrackScreenRequest = async ({
           screen,
           state.domainName,
           traceId,
-          state.variables
+          variables
         );
         if (appearance_response) {
           isChecksPassed = true;
@@ -149,7 +149,7 @@ export const sendTrackScreenRequest = async ({
               screen,
               state.domainName,
               traceId,
-              state.variables
+              variables
             );
             if (appearance_response) {
               return { valid: true };
@@ -185,24 +185,12 @@ export const sendTrackEventRequest = async ({ screen, event }: TrackEventProps) 
           if (eventKeys.includes(customEvent?.eventName)) {
             selectedSpotCheckID =
               spotCheck?.['id'] ?? spotCheck?.['spotCheckId'] ?? intMax;
-            let payloadUserDetails = { ...state.userDetails };
 
             if (selectedSpotCheckID !== intMax) {
-              if (
-                !payloadUserDetails?.email &&
-                !payloadUserDetails?.uuid &&
-                !payloadUserDetails?.mobile
-              ) {
-                const uuid = getStoredUUID();
-                if (uuid) {
-                  payloadUserDetails.uuid = uuid;
-                }
-              }
-
               const payload = {
                 screenName: screen,
                 variables: state.variables,
-                userDetails: payloadUserDetails,
+                userDetails: state.screenwiseUserDetails[screen] || {},
                 visitor: {
                   deviceType: 'MOBILE',
                   operatingSystem: await getOS(),

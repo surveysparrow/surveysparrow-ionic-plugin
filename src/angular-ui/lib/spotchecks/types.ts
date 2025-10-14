@@ -36,6 +36,7 @@ export interface SpotcheckState {
   spotChecksMode: string;
   avatarEnabled: boolean;
   avatarUrl: string;
+  screenwiseUserDetails: Record<string, UserDetails | undefined>;
 }
 
 export interface UserDetails {

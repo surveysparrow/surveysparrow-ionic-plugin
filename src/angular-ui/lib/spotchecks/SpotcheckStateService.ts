@@ -44,6 +44,7 @@ export class SpotcheckStateService {
     spotChecksMode: '',
     avatarEnabled: false,
     avatarUrl: '',
+    screenwiseUserDetails: {}
   };
   
   private spotcheckState = new BehaviorSubject<SpotcheckState>(this.initialState);
