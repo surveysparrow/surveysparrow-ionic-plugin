@@ -22,6 +22,7 @@ import axios from 'axios';
   template: `
     <div style="overflow: hidden; height: 100%;">
       <iframe
+        allow="camera; microphone; geolocation; display-capture; autoplay; clipboard-read; clipboard-write;"
         #iframeRef
         [src]="safeUrl"
         style="width: 100%; height: 100%; display: block;"
