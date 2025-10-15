@@ -307,6 +307,7 @@ export const handleSurveyEnd = () => {
 export const getSpotcheckComponentCssStyles = (state: SpotcheckState) => { 
   let styles = {}
   let wrapperStyles = {}
+  let extraPaddingForMiniCardCloseButtonIfTopPosition = 0;
   if (state.isFullScreenMode && state.isVisible) {
     wrapperStyles = {
       display: 'flex',
@@ -351,6 +352,9 @@ export const getSpotcheckComponentCssStyles = (state: SpotcheckState) => {
             display: 'flex',
             justifyContent: 'flex-start',
           };
+          if(state.spotChecksMode === 'miniCard' && state.isCloseButtonEnabled) {
+            extraPaddingForMiniCardCloseButtonIfTopPosition = 30;
+          }
         break;
           
         case 'center':
@@ -385,6 +389,7 @@ export const getSpotcheckComponentCssStyles = (state: SpotcheckState) => {
     styles: {
       display: 'none',
       flexDirection: 'column',
+      paddingTop: extraPaddingForMiniCardCloseButtonIfTopPosition+'px',
       ...styles,
     }
   };
