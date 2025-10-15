@@ -307,7 +307,6 @@ export const handleSurveyEnd = () => {
 export const getSpotcheckComponentCssStyles = (state: SpotcheckState) => { 
   let styles = {}
   let wrapperStyles = {}
-  let padding = 30;
   if (state.isFullScreenMode && state.isVisible) {
     wrapperStyles = {
       display: 'flex',
@@ -323,7 +322,6 @@ export const getSpotcheckComponentCssStyles = (state: SpotcheckState) => {
 
     let height = Math.min(state.currentQuestionHeight, (state.maxHeight * window.innerHeight));
     if(state.spotChecksMode === 'miniCard') {
-      padding = 45;
       if(state.avatarEnabled) {
         height = height - 56;
       }
@@ -382,8 +380,6 @@ export const getSpotcheckComponentCssStyles = (state: SpotcheckState) => {
       zIndex: '99999999',
       display: 'none',
       flexDirection: 'column',
-      paddingTop: padding+'px',
-      paddingBottom: padding+'px',
       ...wrapperStyles
     },
     styles: {

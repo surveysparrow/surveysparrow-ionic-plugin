@@ -20,12 +20,12 @@ import axios from 'axios';
 @Component({
   selector: 'WebViewComponent',
   template: `
-    <div style="overflow: hidden; height: 100%;">
+    <div style="overflow: hidden; height: 100%; border-radius: {{isMiniCard ? 12 : 0}}px; padding-left: {{isMiniCard ? 12 : 0}}px; padding-right: {{isMiniCard ? 12 : 0}}px; box-sizing: border-box;">
       <iframe
         allow="camera; microphone; geolocation; display-capture; autoplay; clipboard-read; clipboard-write;"
         #iframeRef
         [src]="safeUrl"
-        style="width: 100%; height: 100%; display: block;"
+        style="width: 100%; height: 100%; display: block; border-radius: {{isMiniCard ? 12 : 0}}px;"
         frameborder="0"
       >
       </iframe>
@@ -37,6 +37,7 @@ import axios from 'axios';
 export class WebViewComponent implements OnInit, AfterViewInit {
   @Input() url: string = '';
   @Input() webviewType: 'classic' | 'chat' = 'classic';
+  @Input() isMiniCard: boolean = false;
 
   safeUrl: SafeResourceUrl | null = null;
   @ViewChild('iframeRef') iframe!: ElementRef<HTMLIFrameElement>;
@@ -211,6 +212,7 @@ export class CloseButtonComponent implements OnDestroy {
 @Component({
   selector: 'SpotCheckComponent',
   templateUrl: './SpotCheckComponent.html',
+  styleUrls: ['./SpotCheckComponent.css'],
   standalone: true,
   imports: [CommonModule, WebViewComponent, CloseButtonComponent],
 })

@@ -1,4 +1,4 @@
-<div [ngStyle]="componentStyles.wrapperStyles">
+<div [ngStyle]="componentStyles.wrapperStyles" class="safe-area">
   <div [ngStyle]="componentStyles.styles">
     <div style="position: relative; height: 100%;">
       <spotcheck-close-button />
@@ -7,12 +7,14 @@
         *ngIf="state.classicUrl && state.classicUrl.length > 0 && state.spotcheckURL.length > 0 && state.spotCheckType === 'classic'"
         [url]="state.classicUrl"
         [webviewType]="'classic'"
+        [isMiniCard]="state.spotChecksMode === 'miniCard'"
       />
   
       <WebViewComponent
         *ngIf="state.chatUrl && state.chatUrl.length > 0 && state.spotcheckURL.length > 0 && state.spotCheckType === 'chat'"
         [url]="state.chatUrl"
         [webviewType]="'chat'"
+        [isMiniCard]="state.spotChecksMode === 'miniCard'"
       />
 
       <div *ngIf="state.spotChecksMode === 'miniCard' && state.avatarEnabled">
