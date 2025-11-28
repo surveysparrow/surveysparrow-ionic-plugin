@@ -64,7 +64,7 @@ export const sendTrackScreenRequest = async ({
       customProperties: customProperties,
     };
 
-    const url = `https://${state.domainName}/api/internal/spotcheck/widget/${state.targetToken}/properties?isSpotCheck=true`;
+    const url = `https://${state.domainName}/api/internal/spotcheck/widget/${state.targetToken}/properties?isSpotCheck=true&sdk=IONIC`;
     const response = await axios.post(url, payload, {
       headers: {
         'Content-Type': 'application/json',
