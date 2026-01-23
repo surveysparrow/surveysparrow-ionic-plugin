@@ -5,6 +5,7 @@ import axios from 'axios';
 import { SpotcheckStateService } from './SpotcheckStateService';
 
 let globalSpotcheckStateService: SpotcheckStateService;
+let globalOS: string | null = null;
 
 export const getSpotcheckStateService = (): SpotcheckStateService => {
   if (!globalSpotcheckStateService) {
@@ -30,7 +31,8 @@ export const ischatSurvey = (type: String) => {
 
 export const getOS = async () => {
   const info = await Device.getInfo();
-  return info.operatingSystem;
+  globalOS = info.operatingSystem;
+  return globalOS;
 };
 
 export const setAppearance = async (
@@ -121,12 +123,12 @@ export const setAppearance = async (
 
       try {
         const response = await axios.get(fullSpotcheckURL);
-        const themeInfo = response.data.config.generatedCSS;
+        const themeInfo = response.data?.config?.generatedCSS;
         const theme_payload = { type: 'THEME_UPDATE_SPOTCHECK', themeInfo };
         state = spotcheckStateService.getState();
 
         let webViewRef = chat ? state.chatWebViewRef : state.classicWebViewRef;
-        let isLoading = chat ? state.isChatLoading : state.isClassicLoading;
+        let isLoading = chat ? state.isChatLoading || !state.isChatLoadEventReceived : state.isClassicLoading || !state.isClassicLoadEventReceived;
 
         const resetStateData = {
           type: 'RESET_STATE',
@@ -177,9 +179,12 @@ export const setAppearance = async (
                   isClassicLoading,
                   chatWebViewRef,
                   classicWebViewRef,
+                  isClassicLoadEventReceived,
+                  isChatLoadEventReceived,
                 } = currentState;
 
-                if ((!isChatLoading && chat) || (!isClassicLoading && !chat)) {
+                
+                if ((!isChatLoading && chat && isChatLoadEventReceived) || (!isClassicLoading && !chat && isClassicLoadEventReceived)) {
                   unsubscribe.unsubscribe();
                   const activeWebViewRef = chat
                     ? chatWebViewRef
@@ -204,8 +209,8 @@ export const setAppearance = async (
                 ? currentState.chatWebViewRef
                 : currentState.classicWebViewRef;
               const updatedIsLoading = chat
-                ? currentState.isChatLoading
-                : currentState.isClassicLoading;
+                ? currentState.isChatLoading || !currentState.isChatLoadEventReceived
+                : currentState.isClassicLoading || !currentState.isClassicLoadEventReceived;
 
               if (updatedWebViewRef) {
                 if (!updatedIsLoading) {
@@ -318,6 +323,8 @@ export const getSpotcheckComponentCssStyles = (state: SpotcheckState) => {
       height: '100%',
     };
   }
+
+  let marginBottom =  globalOS !== 'ios' ? 18 : 0;
   
   if (state.isVisible && state.isMounted) {
 
@@ -325,6 +332,9 @@ export const getSpotcheckComponentCssStyles = (state: SpotcheckState) => {
     if(state.spotChecksMode === 'miniCard') {
       if(state.avatarEnabled) {
         height = height - 56;
+        if(state.spotcheckPosition === 'bottom') {
+          marginBottom += 56;
+        }
       }
       if(state.isCloseButtonEnabled) {
         height = height - 40;
@@ -332,7 +342,7 @@ export const getSpotcheckComponentCssStyles = (state: SpotcheckState) => {
     }
 
     switch (state.spotcheckPosition) {
-      case 'bottom':
+      case 'bottom':  
         styles = {
           display: 'flex',
           height: height+'px',
@@ -381,7 +391,7 @@ export const getSpotcheckComponentCssStyles = (state: SpotcheckState) => {
       top: '0', 
       left: '0', 
       backgroundColor: 'rgba(0, 0, 0, 0.3)', 
-      zIndex: '99999999',
+      zIndex: '100001',
       display: 'none',
       flexDirection: 'column',
       ...wrapperStyles
@@ -390,6 +400,7 @@ export const getSpotcheckComponentCssStyles = (state: SpotcheckState) => {
       display: 'none',
       flexDirection: 'column',
       paddingTop: extraPaddingForMiniCardCloseButtonIfTopPosition+'px',
+      marginBottom: marginBottom+'px',
       ...styles,
     }
   };

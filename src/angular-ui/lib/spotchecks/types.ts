@@ -23,6 +23,8 @@ export interface SpotcheckState {
   traceId: string;
   isClassicLoading: boolean;
   isChatLoading: boolean;
+  isClassicLoadEventReceived: boolean;
+  isChatLoadEventReceived: boolean;
   classicUrl: string;
   chatUrl: string;
   classicWebViewRef: any | null;
