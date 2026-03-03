@@ -3,6 +3,7 @@ import { Device } from '@capacitor/device';
 import { SpotcheckState } from './types';
 import axios from 'axios';
 import { SpotcheckStateService } from './SpotcheckStateService';
+import { getSpotCheckEventListener } from './SpotCheckEventListener';
 
 let globalSpotcheckStateService: SpotcheckStateService;
 
@@ -120,7 +121,7 @@ export const setAppearance = async (
       spotcheckStateService.setState(updatedState);
 
       try {
-        const response = await axios.get(fullSpotcheckURL);
+        const response = await axios.get<any>(fullSpotcheckURL);
         const themeInfo = response.data.config.generatedCSS;
         const theme_payload = { type: 'THEME_UPDATE_SPOTCHECK', themeInfo };
         state = spotcheckStateService.getState();
@@ -256,8 +257,10 @@ export const closeSpotCheck = async () => {
         body: JSON.stringify(payload),
       }
     );
-
-    if (response.status != 200) {
+    if(response.status == 200) {
+      getSpotCheckEventListener().emit('surveyDismissed');
+    }
+    else{
       console.log(`Error: ${response.status}`);
     }
   } catch (error) {
@@ -396,6 +399,5 @@ export const getSpotcheckComponentCssStyles = (state: SpotcheckState) => {
 };
 
 export const closeSpotCheckAndHandleSurveyEnd = async () => {
-  await closeSpotCheck();
   handleSurveyEnd();
 };

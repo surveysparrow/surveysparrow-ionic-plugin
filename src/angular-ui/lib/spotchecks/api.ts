@@ -65,7 +65,7 @@ export const sendTrackScreenRequest = async ({
     };
 
     const url = `https://${state.domainName}/api/internal/spotcheck/widget/${state.targetToken}/properties?isSpotCheck=true&sdk=IONIC`;
-    const response = await axios.post(url, payload, {
+    const response = await axios.post<any>(url, payload, {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -212,7 +212,7 @@ export const sendTrackEventRequest = async ({ screen, event }: TrackEventProps) 
               const url = `https://${state.domainName}/api/internal/spotcheck/widget/${state.targetToken}/eventTrigger?isSpotCheck=true`;
 
               try {
-                const response = await axios.post(url, payload, {
+                const response = await axios.post<any>(url, payload, {
                   headers: {
                     'Content-Type': 'application/json',
                   },
