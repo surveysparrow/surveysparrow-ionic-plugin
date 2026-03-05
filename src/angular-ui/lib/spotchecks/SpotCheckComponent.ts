@@ -25,7 +25,8 @@ import axios from 'axios';
   template: `
     <div style="overflow: hidden; height: 100%; border-radius: {{isMiniCard ? 12 : 0}}px; padding-left: {{isMiniCard ? 12 : 0}}px; padding-right: {{isMiniCard ? 12 : 0}}px; box-sizing: border-box;">
       <iframe
-        allow="camera; microphone; geolocation; display-capture; autoplay; clipboard-read; clipboard-write;"
+        allow="camera; microphone; geolocation; display-capture; autoplay; clipboard-read; clipboard-write; fullscreen"
+        allowfullscreen
         #iframeRef
         [src]="safeUrl"
         style="width: 100%; height: 100%; display: block; border-radius: {{isMiniCard ? 12 : 0}}px;"
@@ -49,7 +50,7 @@ export class WebViewComponent implements OnInit, AfterViewInit {
     private sanitizer: DomSanitizer,
     private ngZone: NgZone,
     private cdr: ChangeDetectorRef,
-  ) {}
+  ) { }
   ngOnInit() {
     if (this.url) {
       this.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.url);
@@ -78,6 +79,7 @@ export class WebViewComponent implements OnInit, AfterViewInit {
     const iframe = this.iframe.nativeElement;
     iframe.addEventListener('load', () => {
       this.ngZone.run(() => {
+        this.injectNativeBridgeAdapters(iframe);
         const stateService = getSpotcheckStateService();
         if (this.webviewType === 'classic') {
           stateService.setState({ isClassicLoading: false });
@@ -86,6 +88,49 @@ export class WebViewComponent implements OnInit, AfterViewInit {
         }
       });
     });
+  }
+
+  private injectNativeBridgeAdapters(iframe: HTMLIFrameElement) {
+    if (iframe && iframe.contentWindow) {
+      try {
+        const iframeWindow = iframe.contentWindow as any;
+
+        if (!iframeWindow.SsAndroidSdk) {
+          iframeWindow.SsAndroidSdk = {
+            shareData: function () { },
+            sendPartialSubmissionData: function () { }
+          };
+        }
+
+        if (!iframeWindow.Android) {
+          iframeWindow.Android = {
+            onMessageReceive: function () { }
+          };
+        }
+
+        if (!iframeWindow.webkit) {
+          iframeWindow.webkit = {
+            messageHandlers: {
+              surveyResponse: {
+                postMessage: function () { }
+              },
+              spotCheckData: {
+                postMessage: function () { }
+              },
+              flutterSpotCheckData: {
+                postMessage: function () { }
+              }
+            }
+          };
+        }
+
+        if (!iframeWindow.flutterSpotCheckData) {
+          iframeWindow.flutterSpotCheckData = {
+            postMessage: function () { }
+          };
+        }
+      } catch (error) { }
+    }
   }
 
   @HostListener('window:message', ['$event'])
@@ -121,6 +166,15 @@ export class WebViewComponent implements OnInit, AfterViewInit {
 
         case 'surveyLoadStarted':
           getSpotCheckEventListener().emit('surveyLoadStarted', data.surveyDetails);
+          break;
+
+
+        case 'classicLoadEvent':
+          stateService.setState({ isClassicLoadEventReceived: true });
+          break;
+
+        case 'chatLoadEvent':
+          stateService.setState({ isChatLoadEventReceived: true });
           break;
 
         default:
@@ -175,15 +229,15 @@ export class CloseSVGComponent {
 export class CloseButtonComponent implements OnDestroy {
   @Input() size: number = 30;
   @Input() strokeWidth: number = 1.2;
-  
+
   state: SpotcheckState;
   private stateService: SpotcheckStateService;
   private stateSubscription!: Subscription;
-  
+
   isVisible: boolean = false;
   isMiniCard: boolean = false;
   stroke: string = 'black';
-  
+
   constructor(
     private ngZone: NgZone,
     private cdr: ChangeDetectorRef,

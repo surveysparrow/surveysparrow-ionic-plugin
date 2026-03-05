@@ -31,6 +31,8 @@ export class SpotcheckStateService {
     traceId: '',
     isClassicLoading: true,
     isChatLoading: true,
+    isClassicLoadEventReceived: false,
+    isChatLoadEventReceived: false,
     classicUrl: '',
     chatUrl: '',
     classicWebViewRef: null,

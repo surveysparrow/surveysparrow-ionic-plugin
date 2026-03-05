@@ -158,7 +158,7 @@ export const sendTrackScreenRequest = async ({
         }
       }
 
-      throw new Error(responseJson?.reason.toString());
+      throw new Error(responseJson?.reason?.toString() ?? 'Spotcheck conditions not met');
     } else {
       throw new Error(`Received status code ${response.status}`);
     }
@@ -265,7 +265,7 @@ export const sendTrackEventRequest = async ({ screen, event }: TrackEventProps) 
                     }
                   }
 
-                  throw new Error(responseJson?.reason.toString());
+                  throw new Error(responseJson?.reason?.toString() ?? 'Event conditions not met');
                 } else {
                   throw new Error(`Received status code ${response.status}`);
                 }
