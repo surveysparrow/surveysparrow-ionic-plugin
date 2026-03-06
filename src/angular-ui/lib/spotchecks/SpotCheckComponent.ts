@@ -237,6 +237,7 @@ export class CloseButtonComponent implements OnDestroy {
   isVisible: boolean = false;
   isMiniCard: boolean = false;
   stroke: string = 'black';
+  private isClosing: boolean = false;
 
   constructor(
     private ngZone: NgZone,
@@ -274,9 +275,16 @@ export class CloseButtonComponent implements OnDestroy {
               this.state.spotCheckType === 'chat'))));
     this.isMiniCard = this.state.spotChecksMode === 'miniCard';
     this.stroke = this.isMiniCard ? 'black' : this.state.closeButtonStyle?.['ctaButton'] || 'black';
+    if (this.isVisible) {
+      this.isClosing = false;
+    }
   }
 
   onClick = async () => {
+    if (this.isClosing) {
+      return;
+    }
+    this.isClosing = true;
     await closeSpotCheck();
     handleSurveyEnd();
     this.ngZone.run(() => {
