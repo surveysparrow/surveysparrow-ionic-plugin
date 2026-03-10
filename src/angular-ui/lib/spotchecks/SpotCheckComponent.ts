@@ -226,7 +226,7 @@ export class CloseSVGComponent {
   standalone: true,
   imports: [CommonModule, CloseSVGComponent],
 })
-export class CloseButtonComponent implements OnDestroy {
+export class CloseButtonComponent implements OnInit, OnDestroy {
   @Input() size: number = 30;
   @Input() strokeWidth: number = 1.2;
 
@@ -246,7 +246,9 @@ export class CloseButtonComponent implements OnDestroy {
     this.stateService = getSpotcheckStateService();
     this.state = this.stateService.getState();
     this.updateComponentState();
+  }
 
+  ngOnInit(): void {
     this.stateSubscription = this.stateService.state$.subscribe(
       (newState: SpotcheckState) => {
         this.ngZone.run(() => {
@@ -304,7 +306,7 @@ export class CloseButtonComponent implements OnDestroy {
 export class SpotCheckComponent implements OnInit, OnDestroy {
   state: SpotcheckState;
   private spotcheckStateService: SpotcheckStateService;
-  private stateSubscription: Subscription;
+  private stateSubscription!: Subscription;
   componentStyles: any = {};
   avatarUrl: string = '';
 
@@ -315,7 +317,9 @@ export class SpotCheckComponent implements OnInit, OnDestroy {
     this.spotcheckStateService = getSpotcheckStateService();
     this.state = this.spotcheckStateService.getState();
     this.updateComponentStyles();
+  }
 
+  ngOnInit(): void {
     this.stateSubscription = this.spotcheckStateService.state$.subscribe(
       (newState: SpotcheckState) => {
         this.ngZone.run(() => {
@@ -326,9 +330,6 @@ export class SpotCheckComponent implements OnInit, OnDestroy {
         });
       }
     );
-  }
-
-  ngOnInit(): void {
     this.initializeComponent();
   }
 
