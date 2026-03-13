@@ -7,6 +7,8 @@ import {
   ElementRef,
   AfterViewInit,
   HostListener,
+  NgZone,
+  ChangeDetectorRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
@@ -15,6 +17,7 @@ import { closeSpotCheck, closeSpotCheckAndHandleSurveyEnd, getSpotcheckComponent
 import { SpotcheckState } from './types';
 import { getSpotcheckStateService } from './helpers';
 import { SpotcheckStateService } from './SpotcheckStateService';
+import { getSpotCheckEventListener } from './SpotCheckEventListener';
 import axios from 'axios';
 
 @Component({
@@ -22,7 +25,8 @@ import axios from 'axios';
   template: `
     <div style="overflow: hidden; height: 100%; border-radius: {{isMiniCard ? 12 : 0}}px; padding-left: {{isMiniCard ? 12 : 0}}px; padding-right: {{isMiniCard ? 12 : 0}}px; box-sizing: border-box;">
       <iframe
-        allow="camera; microphone; geolocation; display-capture; autoplay; clipboard-read; clipboard-write;"
+        allow="camera; microphone; geolocation; display-capture; autoplay; clipboard-read; clipboard-write; fullscreen"
+        allowfullscreen
         #iframeRef
         [src]="safeUrl"
         style="width: 100%; height: 100%; display: block; border-radius: {{isMiniCard ? 12 : 0}}px;"
@@ -42,7 +46,11 @@ export class WebViewComponent implements OnInit, AfterViewInit {
   safeUrl: SafeResourceUrl | null = null;
   @ViewChild('iframeRef') iframe!: ElementRef<HTMLIFrameElement>;
 
-  constructor(private sanitizer: DomSanitizer) {}
+  constructor(
+    private sanitizer: DomSanitizer,
+    private ngZone: NgZone,
+    private cdr: ChangeDetectorRef,
+  ) { }
   ngOnInit() {
     if (this.url) {
       this.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.url);
@@ -70,50 +78,110 @@ export class WebViewComponent implements OnInit, AfterViewInit {
   private setupIframeLoadListener() {
     const iframe = this.iframe.nativeElement;
     iframe.addEventListener('load', () => {
-      const stateService = getSpotcheckStateService();
-      if (this.webviewType === 'classic') {
-        stateService.setState({ isClassicLoading: false });
-      } else {
-        stateService.setState({ isChatLoading: false });
-      }
+      this.ngZone.run(() => {
+        this.injectNativeBridgeAdapters(iframe);
+        const stateService = getSpotcheckStateService();
+        if (this.webviewType === 'classic') {
+          stateService.setState({ isClassicLoading: false });
+        } else {
+          stateService.setState({ isChatLoading: false });
+        }
+      });
     });
+  }
+
+  private injectNativeBridgeAdapters(iframe: HTMLIFrameElement) {
+    if (iframe && iframe.contentWindow) {
+      try {
+        const iframeWindow = iframe.contentWindow as any;
+
+        if (!iframeWindow.SsAndroidSdk) {
+          iframeWindow.SsAndroidSdk = {
+            shareData: function () { },
+            sendPartialSubmissionData: function () { }
+          };
+        }
+
+        if (!iframeWindow.Android) {
+          iframeWindow.Android = {
+            onMessageReceive: function () { }
+          };
+        }
+
+        if (!iframeWindow.webkit) {
+          iframeWindow.webkit = {
+            messageHandlers: {
+              surveyResponse: {
+                postMessage: function () { }
+              },
+              spotCheckData: {
+                postMessage: function () { }
+              },
+              flutterSpotCheckData: {
+                postMessage: function () { }
+              }
+            }
+          };
+        }
+
+        if (!iframeWindow.flutterSpotCheckData) {
+          iframeWindow.flutterSpotCheckData = {
+            postMessage: function () { }
+          };
+        }
+      } catch (error) { }
+    }
   }
 
   @HostListener('window:message', ['$event'])
   onMessage(event: MessageEvent) {
-    const stateService = getSpotcheckStateService();
-    const { data } = event;
-    switch (data.type) {
-      case 'slideInFrame':
-        if (data.mounted) {
-          stateService.setState({ isMounted: true });
-        }
-        break;
+    this.ngZone.run(() => {
+      const stateService = getSpotcheckStateService();
+      const { data } = event;
+      switch (data.type) {
+        case 'slideInFrame':
+          if (data.mounted) {
+            stateService.setState({ isMounted: true });
+          }
+          break;
 
-      case 'resizeWindow':
-        if (data.size) {
-          stateService.setState({
-            currentQuestionHeight: data.size.height,
+        case 'resizeWindow':
+          if (data.size) {
+            stateService.setState({
+              currentQuestionHeight: data.size.height,
+            });
+          } else if (data.isCloseButtonEnabled) {
+            stateService.setState({
+              isCloseButtonEnabled: data.isCloseButtonEnabled,
+            });
+          }
+          break;
+
+        case 'surveyCompleted':
+          closeSpotCheckAndHandleSurveyEnd().then(() => {
+            getSpotCheckEventListener().emit('surveyCompleted', data.response);
+            this.cdr.detectChanges();
           });
-        } else if (data.isCloseButtonEnabled) {
-          stateService.setState({
-            isCloseButtonEnabled: data.isCloseButtonEnabled,
-          });
-        }
-        break;
+          break;
 
-      case 'surveyCompleted':
-        closeSpotCheckAndHandleSurveyEnd();
-        // spotchecksListener.emitSurveyCompleted(data.response);
-        break;
+        case 'surveyLoadStarted':
+          getSpotCheckEventListener().emit('surveyLoadStarted', data.surveyDetails);
+          break;
 
-      case 'surveyLoadStarted':
-        // spotchecksListener.emitSurveyLoadStarted(data.surveyDetails);
-        break;
 
-      default:
-        break;
-    }
+        case 'classicLoadEvent':
+          stateService.setState({ isClassicLoadEventReceived: true });
+          break;
+
+        case 'chatLoadEvent':
+          stateService.setState({ isChatLoadEventReceived: true });
+          break;
+
+        default:
+          break;
+      }
+      this.cdr.detectChanges();
+    });
   }
 }
 
@@ -158,27 +226,36 @@ export class CloseSVGComponent {
   standalone: true,
   imports: [CommonModule, CloseSVGComponent],
 })
-export class CloseButtonComponent implements OnDestroy {
+export class CloseButtonComponent implements OnInit, OnDestroy {
   @Input() size: number = 30;
   @Input() strokeWidth: number = 1.2;
-  
+
   state: SpotcheckState;
   private stateService: SpotcheckStateService;
   private stateSubscription!: Subscription;
-  
+
   isVisible: boolean = false;
   isMiniCard: boolean = false;
   stroke: string = 'black';
-  
-  constructor() {
+  private isClosing: boolean = false;
+
+  constructor(
+    private ngZone: NgZone,
+    private cdr: ChangeDetectorRef,
+  ) {
     this.stateService = getSpotcheckStateService();
     this.state = this.stateService.getState();
     this.updateComponentState();
+  }
 
+  ngOnInit(): void {
     this.stateSubscription = this.stateService.state$.subscribe(
       (newState: SpotcheckState) => {
-        this.state = newState;
-        this.updateComponentState();
+        this.ngZone.run(() => {
+          this.state = newState;
+          this.updateComponentState();
+          this.cdr.detectChanges();
+        });
       }
     );
   }
@@ -200,11 +277,21 @@ export class CloseButtonComponent implements OnDestroy {
               this.state.spotCheckType === 'chat'))));
     this.isMiniCard = this.state.spotChecksMode === 'miniCard';
     this.stroke = this.isMiniCard ? 'black' : this.state.closeButtonStyle?.['ctaButton'] || 'black';
+    if (this.isVisible) {
+      this.isClosing = false;
+    }
   }
 
   onClick = async () => {
+    if (this.isClosing) {
+      return;
+    }
+    this.isClosing = true;
     await closeSpotCheck();
     handleSurveyEnd();
+    this.ngZone.run(() => {
+      this.cdr.detectChanges();
+    });
   };
 }
 
@@ -219,25 +306,30 @@ export class CloseButtonComponent implements OnDestroy {
 export class SpotCheckComponent implements OnInit, OnDestroy {
   state: SpotcheckState;
   private spotcheckStateService: SpotcheckStateService;
-  private stateSubscription: Subscription;
+  private stateSubscription!: Subscription;
   componentStyles: any = {};
   avatarUrl: string = '';
 
-  constructor() {
+  constructor(
+    private ngZone: NgZone,
+    private cdr: ChangeDetectorRef,
+  ) {
     this.spotcheckStateService = getSpotcheckStateService();
     this.state = this.spotcheckStateService.getState();
     this.updateComponentStyles();
-
-    this.stateSubscription = this.spotcheckStateService.state$.subscribe(
-      (newState: SpotcheckState) => {
-        this.state = newState;
-        this.updateComponentStyles();
-        this.avatarUrl = this.state.avatarUrl || "https://static.surveysparrow.com/application/images/profile.png";
-      }
-    );
   }
 
   ngOnInit(): void {
+    this.stateSubscription = this.spotcheckStateService.state$.subscribe(
+      (newState: SpotcheckState) => {
+        this.ngZone.run(() => {
+          this.state = newState;
+          this.updateComponentStyles();
+          this.avatarUrl = this.state.avatarUrl || "https://static.surveysparrow.com/application/images/profile.png";
+          this.cdr.detectChanges();
+        });
+      }
+    );
     this.initializeComponent();
   }
 
@@ -255,9 +347,11 @@ export class SpotCheckComponent implements OnInit, OnDestroy {
     try {
       const domainName = this.state.domainName;
       const targetToken = this.state.targetToken;
-      const response = await axios.get(
+
+      const response = await axios.get<any>(
         `https://${domainName}/api/internal/spotcheck/widget/${targetToken}/init`
       );
+
       const data = response.data;
 
       if (data.filteredSpotChecks && data.filteredSpotChecks.length > 0) {
