@@ -65,10 +65,10 @@ public class SurveySparrow: SsSurveyDelegate {
         if promptTime == 0 {
             let nextPrompt = currentTime + startAfter
             UserDefaults.standard.set(nextPrompt, forKey: promptTimeKey)
-            dataStore.set(1, forKey: incrementMultiplierKey)
+            dataStore.set(Int64(1), forKey: incrementMultiplierKey)
             return
         }
-        if self.domain != nil && self.token != nil {
+        if !domain.isEmpty && !token.isEmpty {
             if isConnectedToNetwork && (!isAlreadyTaken || repeatSurvey) && (promptTime < currentTime) {
                 var isActive: Bool = false
                 var reason: String = ""
