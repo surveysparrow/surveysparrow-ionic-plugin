@@ -1,7 +1,10 @@
-export { initializeSpotChecks, trackScreen, trackEvent } from './SpotCheck';
 export {
-  addSpotCheckListener,
-} from './SpotCheckEventListener';
+  initializeSpotChecks,
+  trackScreen,
+  trackEvent,
+  SDK_VERSION,
+} from './SpotCheck';
+export { addSpotCheckListener } from './SpotCheckEventListener';
 export type {
   UserDetails,
   Variables,
@@ -9,4 +12,6 @@ export type {
   TrackScreenProps,
   TrackEventProps,
   InitializeSpotChecksProps,
+  SpotcheckProps,
+  SsSpotcheckListener,
 } from './types';

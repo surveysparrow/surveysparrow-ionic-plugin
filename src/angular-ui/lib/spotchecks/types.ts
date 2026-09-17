@@ -1,3 +1,57 @@
+export interface SsSpotcheckListener {
+  onSurveyLoaded?: (response: Record<string, unknown>) => Promise<void>;
+  onSurveyResponse?: (response: Record<string, unknown>) => Promise<void>;
+  onPartialSubmission?: (response: Record<string, unknown>) => Promise<void>;
+  onCloseButtonTap?: () => Promise<void>;
+}
+
+export interface UserDetails {
+  uuid?: string;
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  mobile?: number;
+  [key: string]: unknown;
+}
+
+export interface Variables {
+  sparrowLang?: string;
+  [key: string]: unknown;
+}
+
+export interface CustomProperties {
+  [key: string]: unknown;
+}
+
+export interface TrackScreenOptions {
+  variables?: Variables;
+  customProperties?: CustomProperties;
+  userDetails?: UserDetails;
+}
+
+export interface SpotcheckProps {
+  domainName: string;
+  targetToken: string;
+  userDetails?: UserDetails;
+  variables?: Variables;
+  customProperties?: CustomProperties;
+  listener?: SsSpotcheckListener;
+}
+
+export interface InitializeSpotChecksProps extends SpotcheckProps {}
+
+export interface TrackScreenProps {
+  screen: string;
+  options?: TrackScreenOptions;
+}
+
+export interface TrackEventProps {
+  screen: string;
+  event: Record<string, unknown>;
+  options?: TrackScreenOptions;
+}
+
+/** @deprecated Legacy flat shape — prefer TrackScreenProps / SpotcheckProps */
 export interface SpotcheckState {
   isVisible: boolean;
   spotcheckPosition: string;
@@ -14,7 +68,7 @@ export interface SpotcheckState {
   isCloseButtonEnabled: boolean;
   isSpotPassed: boolean;
   isChecksPassed: boolean;
-  customEventsSpotChecks: Record<string, any>[];
+  customEventsSpotChecks: Record<string, unknown>[];
   targetToken: string;
   domainName: string;
   userDetails: UserDetails;
@@ -27,10 +81,10 @@ export interface SpotcheckState {
   isChatLoadEventReceived: boolean;
   classicUrl: string;
   chatUrl: string;
-  classicWebViewRef: any | null;
-  chatWebViewRef: any | null;
-  filteredSpotChecks: Record<string, any>[];
-  spotCheckType: String;
+  classicWebViewRef: unknown | null;
+  chatWebViewRef: unknown | null;
+  filteredSpotChecks: Record<string, unknown>[];
+  spotCheckType: string;
   isMounted: boolean;
   textPosition: number;
   screenHeight: number;
@@ -39,48 +93,4 @@ export interface SpotcheckState {
   avatarEnabled: boolean;
   avatarUrl: string;
   screenwiseUserDetails: Record<string, UserDetails | undefined>;
-}
-
-export interface UserDetails {
-  uuid?: string;
-  email?: string;
-  firstName?: string;
-  lastName?: string;
-  mobile?: number;
-  [key: string]: any;
-}
-
-export interface Variables {
-  sparrowLang?: string;
-  [key: string]: any;
-}
-
-export interface CustomProperties {
-  [key: string]: any;
-}
-
-export interface TrackScreenProps {
-  screen: string;
-  options?: {
-    variables?: Variables;
-    customProperties?: CustomProperties;
-    userDetails?: UserDetails;
-  };
-}
-
-export interface TrackEventProps {
-  screen: string;
-  event: {
-    [key: string]: {
-      [key: string]: string;
-    };
-  };
-}
-
-export interface InitializeSpotChecksProps {
-  domainName: string;
-  targetToken: string;
-  userDetails?: UserDetails;
-  variables?: Variables;
-  customProperties?: CustomProperties;
 }
