@@ -1,134 +1,121 @@
-import { spotcheckStore, updateState } from '../state/spotcheck-store';
-import { functionStore } from '../state/function-store';
+import { functionStore, spotcheckStore } from '../state/store';
 import { saveData, loadData } from './storage';
-import { captureP0Error, captureP1Error } from './sentry';
-import { pauseDefaultKeyboardBehavior, resumeDefaultKeyboardBehavior } from './keyboard';
-import type { SsSpotcheckListener } from '../types';
-import { SDK_VERSION } from '../constants';
-import { getSpotCheckEventListener } from '../SpotCheckEventListener';
+import { sdkListener } from './listener';
+import { captureP0Error, captureP1Error, addBreadcrumb, registerExecute } from './sentry';
+import { SDK_VERSION } from './version';
 
-const pauseKeyboard = pauseDefaultKeyboardBehavior;
-const resumeKeyboard = resumeDefaultKeyboardBehavior;
-
-let spotcheckListener: SsSpotcheckListener = {};
-
-export const setListener = (listener: SsSpotcheckListener) => {
-  spotcheckListener = listener || {};
-};
-
-function bridgedListener(): SsSpotcheckListener {
-  const ev = getSpotCheckEventListener();
-  return {
-    ...spotcheckListener,
-    onSurveyResponse: async (response) => {
-      ev.emit('surveyCompleted', response);
-      await spotcheckListener.onSurveyResponse?.(response);
-    },
-    onCloseButtonTap: async () => {
-      ev.emit('surveyDismissed');
-      await spotcheckListener.onCloseButtonTap?.();
-    },
-    onSurveyLoaded: async (response) => {
-      ev.emit('surveyLoadStarted', response);
-      await spotcheckListener.onSurveyLoaded?.(response);
-    },
-    onPartialSubmission: spotcheckListener.onPartialSubmission,
-  };
-}
-
-export const dispatchWrapper = (stateUpdate: Record<string, unknown>) => {
+export const dispatchWrapper = (stateUpdate: any) => {
   try {
-    spotcheckStore.dispatch(updateState(stateUpdate as any));
-  } catch (error: unknown) {
-    captureP1Error(error, 'GENERAL', {
-      action: 'dispatchWrapper',
-      errorMessage: error instanceof Error ? error.message : String(error),
-    });
+    spotcheckStore.dispatch(stateUpdate);
+  } catch (error: any) {
+    captureP1Error(error, 'GENERAL', { action: 'dispatchWrapper', errorMessage: error?.message });
   }
 };
 
-type PendingCall = { functionName: string; params?: unknown };
+type PendingCall = { functionName: string; params?: any };
 
 const pendingExecutes: PendingCall[] = [];
+const MAX_PENDING_EXECUTES = 20;
 
-function isTrackScreenOrEvent(functionName: string): boolean {
-  return functionName === 'trackScreen' || functionName === 'trackEvent';
-}
+const isTrackScreenOrEvent = (functionName: string) =>
+  functionName === 'trackScreen' || functionName === 'trackEvent';
 
-export const flushPendingExecutes = async () => {
+const flushPendingExecutes = async () => {
   while (pendingExecutes.length > 0) {
     const item = pendingExecutes.shift();
-    if (item) {
-      await execute(item.functionName, item.params);
-    }
+    if (item) await execute(item.functionName, item.params);
   }
 };
 
-export const execute = async (
-  functionName: string,
-  params?: unknown
-): Promise<unknown> => {
-  let func: (...args: unknown[]) => unknown;
-  let payload: Record<string, unknown>;
+// Track calls wait until initializeSpotcheckComponent has finished.
+let isInitialized = false;
+
+export const markInitialized = async () => {
+  isInitialized = true;
+  await flushPendingExecutes();
+};
+
+// Reporting failures are not reported again (avoids loops).
+const isSentryFunction = (functionName: string) => functionName.startsWith('sentry.');
+
+// Style getters run on every render; they would push useful breadcrumbs out.
+const isBreadcrumbWorthy = (functionName: string) =>
+  !isSentryFunction(functionName) && !/\.get\w*Styles$/.test(functionName);
+
+// Message type only; never survey content.
+const describeParams = (functionName: string, params?: any) => {
+  if (functionName !== 'webviewComponent.handleWebViewMessage') return {};
+  try {
+    return { messageType: JSON.parse(params?.event?.nativeEvent?.data)?.type };
+  } catch {
+    return {};
+  }
+};
+
+const lookup = (functionName: string): any => {
+  let current: any = functionStore.getState().functionState;
+  for (const part of functionName.split('.')) current = current?.[part];
+  return current;
+};
+
+// True when the backend sent this function (dotted path), e.g. for schema `$execute`.
+export const hasFunction = (functionName: string): boolean => typeof lookup(functionName) === 'string';
+
+// The SDK has no native keyboard mode to change; the overlay follows the keyboard instead.
+const keyboard = {
+  pauseDefaultKeyboardBehavior: () => {},
+  resumeDefaultKeyboardBehavior: () => {},
+};
+
+export const execute = async (functionName: string, params?: any): Promise<any> => {
+  let func: any;
+  let payload: any;
 
   try {
-    const functionState = functionStore.getState();
-
-    if (!functionState.functionState.isLoaded) {
-      if (isTrackScreenOrEvent(functionName)) {
-        pendingExecutes.push({ functionName, params });
-      }
+    if (isTrackScreenOrEvent(functionName) && !isInitialized) {
+      pendingExecutes.push({ functionName, params });
+      // Cap the queue while init keeps failing; oldest calls go first.
+      if (pendingExecutes.length > MAX_PENDING_EXECUTES) pendingExecutes.shift();
       return null;
     }
 
-    const pathParts = functionName.split('.');
-    let functionString: unknown = functionState.functionState as unknown;
-    for (const part of pathParts) {
-      functionString = (functionString as Record<string, unknown>)?.[part];
-    }
+    if (!functionStore.getState().functionState.isLoaded) return null;
 
+    const functionString = lookup(functionName);
     if (!functionString || typeof functionString !== 'string') {
       console.error(`Function ${functionName} not found`);
       return null;
     }
 
-    const baseParams =
-      params && typeof params === 'object'
-        ? { ...(params as object) }
-        : {};
     payload = {
-      params: { ...baseParams, sdkVersion: SDK_VERSION },
+      params: { ...params, sdkVersion: SDK_VERSION },
       state: spotcheckStore.getState(),
       dispatchWrapper,
       storage: { saveData, loadData },
-      listener: bridgedListener(),
+      listener: sdkListener,
       sentry: { captureP0Error, captureP1Error },
-      keyboard: {
-        pauseDefaultKeyboardBehavior: pauseKeyboard,
-        resumeDefaultKeyboardBehavior: resumeKeyboard,
-      },
+      keyboard,
     };
 
-    func = eval(`(${functionString})`) as (...args: unknown[]) => unknown;
-  } catch (error: unknown) {
-    captureP1Error(error, 'GENERAL', {
-      action: 'execute:setup',
-      functionName,
-      errorMessage: error instanceof Error ? error.message : String(error),
-    });
+    // Fresh evaluation per call like the other SDKs; indirect eval keeps it in global scope.
+    func = (0, eval)(`(${functionString})`);
+    if (isBreadcrumbWorthy(functionName)) {
+      addBreadcrumb('execute', { functionName, ...describeParams(functionName, params) });
+    }
+  } catch (error: any) {
+    if (isSentryFunction(functionName)) return null;
+    captureP1Error(error, 'GENERAL', { action: 'execute:setup', functionName, errorMessage: error?.message });
     return null;
   }
 
   try {
-    const result = await func(payload);
-    return result;
-  } catch (error: unknown) {
-    captureP1Error(error, 'GENERAL', {
-      action: 'execute:runtime',
-      functionName,
-      errorMessage: error instanceof Error ? error.message : String(error),
-    });
+    return await func(payload);
+  } catch (error: any) {
+    if (isSentryFunction(functionName)) return null;
+    captureP1Error(error, 'GENERAL', { action: 'execute:runtime', functionName, errorMessage: error?.message });
     console.error(`[execute] ${functionName}:`, error);
     return null;
   }
 };
+
+registerExecute(execute);

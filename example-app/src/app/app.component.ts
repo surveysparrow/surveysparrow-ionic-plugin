@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import { SpotCheck, initializeSpotChecks } from 'surveysparrow-ionic-plugin/angular-ui';
 
@@ -7,28 +7,20 @@ import { SpotCheck, initializeSpotChecks } from 'surveysparrow-ionic-plugin/angu
   templateUrl: 'app.component.html',
   imports: [IonApp, IonRouterOutlet, SpotCheck],
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   constructor() {
-    this.initializeSpotChecks();
-  }
-
-  ngOnInit() {}
-
-  private initializeSpotChecks() {
-    try {
-      initializeSpotChecks({
-        domainName: 'kalai.in.ngrok.io',
-        targetToken: 'tar-mEvMRcbYctzduhay59btya',
-        userDetails: {
-          email: 'kalai@gmail.com',
-        },
-        variables: {
-          sparrowLang: 'en',
-        },
-        customProperties: {},
-      });
-    } catch (error) {
-      console.error('Failed to initialize SpotChecks:', error);
-    }
+    initializeSpotChecks({
+      domainName: 'kalai.in.ngrok.io',
+      targetToken: 'tar-mEvMRcbYctzduhay59btya',
+      userDetails: {},
+      variables: { sparrowLang: 'en' },
+      customProperties: {},
+      listener: {
+        onSurveyLoaded: async (response) => console.log('[SS] onSurveyLoaded', JSON.stringify(response)),
+        onSurveyResponse: async (response) => console.log('[SS] onSurveyResponse', JSON.stringify(response)),
+        onPartialSubmission: async (response) => console.log('[SS] onPartialSubmission', JSON.stringify(response)),
+        onCloseButtonTap: async () => console.log('[SS] onCloseButtonTap'),
+      },
+    });
   }
 }

@@ -2,13 +2,16 @@ export {
   initializeSpotChecks,
   trackScreen,
   trackEvent,
+  closeSpotChecks,
   SDK_VERSION,
-} from './SpotCheck';
-export { addSpotCheckListener } from './SpotCheckEventListener';
+} from './spotcheck';
+export { addSpotCheckListener } from './helpers/listener';
+export type { SpotCheckEventType } from './helpers/listener';
 export type {
   UserDetails,
   Variables,
   CustomProperties,
+  TrackScreenOptions,
   TrackScreenProps,
   TrackEventProps,
   InitializeSpotChecksProps,
