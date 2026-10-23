@@ -1,60 +1,26 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
-import {
-  SpotCheck,
-  initializeSpotChecks,
-  addSpotCheckListener,
-} from 'surveysparrow-ionic-plugin/angular-ui';
-import { Subscription } from 'rxjs';
+import { SpotCheck, initializeSpotChecks } from 'surveysparrow-ionic-plugin/angular-ui';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   imports: [IonApp, IonRouterOutlet, SpotCheck],
 })
-export class AppComponent implements OnInit, OnDestroy {
-  private subscriptions: Subscription[] = [];
-
+export class AppComponent {
   constructor() {
-    this.initializeSpotChecks();
-    this.setupEventListeners();
-  }
-
-  ngOnInit() {}
-
-  ngOnDestroy() {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
-  }
-
-  private setupEventListeners() {
-    this.subscriptions.push(
-      addSpotCheckListener('surveyCompleted', (data) => {
-        console.log('surveyCompleted triggered', data);
-      }),
-      addSpotCheckListener('surveyDismissed', () => {
-        console.log('surveyDismissed by closebutton triggered');
-      }),
-      addSpotCheckListener('surveyLoadStarted', (data) => {
-        console.log('surveyLoadStarted triggered', data);
-      }),
-    );
-  }
-
-  private initializeSpotChecks() {
-    try {
-      initializeSpotChecks({
-        domainName: "kalaiselvanstorage233128.surveysparrow.com",
-        targetToken: "tar-mpGJdyH99ukrJ1UbQZjt9g",
-        userDetails: {
-          email: 'gokulkrishnaraju@surveysparrow.com',
-        },
-        variables: {
-          sparrowLang: 'en',
-        },
-        customProperties: {},
-      });
-    } catch (error) {
-      console.error('Failed to initialize SpotChecks:', error);
-    }
+    initializeSpotChecks({
+      domainName: 'kalai.in.ngrok.io',
+      targetToken: 'tar-mEvMRcbYctzduhay59btya',
+      userDetails: {},
+      variables: { sparrowLang: 'en' },
+      customProperties: {},
+      listener: {
+        onSurveyLoaded: async (response) => console.log('[SS] onSurveyLoaded', JSON.stringify(response)),
+        onSurveyResponse: async (response) => console.log('[SS] onSurveyResponse', JSON.stringify(response)),
+        onPartialSubmission: async (response) => console.log('[SS] onPartialSubmission', JSON.stringify(response)),
+        onCloseButtonTap: async () => console.log('[SS] onCloseButtonTap'),
+      },
+    });
   }
 }
