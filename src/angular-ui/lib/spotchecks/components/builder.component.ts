@@ -129,7 +129,9 @@ const functionConfig = () => componentStore.getState().componentState?.config ||
         <ss-node *ngFor="let child of children; trackBy: byIndex" [node]="child" [ctx]="ctx"></ss-node>
       </div>
       <span *ngSwitchCase="'Text'" class="ss-node-text" [ngStyle]="css">{{ content }}</span>
-      <img *ngSwitchCase="'Image'" class="ss-node-image" [attr.data-ss-role]="role" [src]="props['src']" [ngStyle]="css" alt="" />
+      <!-- A failed image keeps its space but shows nothing, like iOS and Flutter. -->
+      <img *ngSwitchCase="'Image'" class="ss-node-image" [attr.data-ss-role]="role" [src]="props['src']" [ngStyle]="css" alt=""
+        (error)="$any($event.target).style.visibility = 'hidden'" (load)="$any($event.target).style.visibility = ''" />
       <img *ngSwitchCase="'SvgXml'" class="ss-node-svg" [src]="svgSrc" [ngStyle]="css" alt="" />
       <ss-close-button *ngSwitchCase="'CloseButton'"></ss-close-button>
       <ss-webview-renderer *ngSwitchCase="'WebViewRenderer'"

@@ -21,7 +21,7 @@ export class SurveyPage {
     this.iframe.setAttribute('title', 'Survey');
     this.iframe.setAttribute(
       'allow',
-      'camera; microphone; geolocation; autoplay; clipboard-read; clipboard-write; fullscreen',
+      'camera; microphone; geolocation; display-capture; autoplay; clipboard-read; clipboard-write; fullscreen',
     );
     this.iframe.style.cssText = 'display:block;width:100%;height:100%;border:0;background:transparent;';
     host.appendChild(this.iframe);

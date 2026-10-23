@@ -36,6 +36,7 @@ export const getDeviceFacts = async () => {
     os: info.platform === 'web' ? 'web' : info.platform,
     osVersion: String(info.osVersion || ''),
     isTablet: false,
+    ...(info.model ? { model: String(info.model) } : {}),
   };
   if (Capacitor.isNativePlatform()) {
     try {
