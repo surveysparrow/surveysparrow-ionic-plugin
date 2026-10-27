@@ -84,7 +84,6 @@ export class WebViewRendererComponent implements OnChanges, OnDestroy {
       this.page = new SurveyPage(this.el.nativeElement, {
         onMessage: (data) => this.onMessage?.({ nativeEvent: { data } }),
         onError: (error) => this.onError?.(error),
-        getPageScript: () => functionConfig().webViewScript || '',
       });
       this.refCallback?.(this.page);
     }
@@ -96,8 +95,6 @@ export class WebViewRendererComponent implements OnChanges, OnDestroy {
     this.page?.destroy();
   }
 }
-
-const functionConfig = () => componentStore.getState().componentState?.config || {};
 
 // Renders one backend schema node as HTML (same node rules as the other SDKs' Builder).
 @Component({

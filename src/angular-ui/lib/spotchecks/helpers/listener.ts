@@ -43,7 +43,8 @@ export const setListener = (listener?: SsSpotcheckListener) => {
 export const sdkListener: Required<SsSpotcheckListener> = {
   onSurveyLoaded: async (data) => {
     await runInApp(() => appListener.onSurveyLoaded?.(data));
-    emit('surveyLoadStarted', data);
+    // 2.0.3 passed surveyDetails.
+    emit('surveyLoadStarted', data?.['surveyDetails'] ?? data);
   },
   onSurveyResponse: async (data) => {
     await runInApp(() => appListener.onSurveyResponse?.(data));
