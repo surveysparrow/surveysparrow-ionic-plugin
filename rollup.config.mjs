@@ -9,8 +9,6 @@ export default {
       name: 'capacitorSurveySparrowIonicPlugin',
       globals: {
         '@capacitor/core': 'capacitorExports',
-        'axios': 'axios',
-        'uuid': 'uuid',
         '@capacitor/device': 'capacitorDevice',
       },
       sourcemap: true,
@@ -23,6 +21,6 @@ export default {
       inlineDynamicImports: true,
     },
   ],
-  external: ['@capacitor/core', 'axios', 'uuid', '@capacitor/device'],
+  external: ['@capacitor/core', '@capacitor/device', '@angular/core', '@angular/common', '@angular/router'],
   plugins: [nodeResolve()],
 };
