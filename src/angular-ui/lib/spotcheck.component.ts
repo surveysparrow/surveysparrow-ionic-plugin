@@ -6,7 +6,7 @@ import { componentStore, spotcheckStore } from './spotchecks/state/store';
 import { dispatchWrapper, execute } from './spotchecks/helpers/executables';
 import { captureP1Error } from './spotchecks/helpers/sentry';
 import { setAppRunner } from './spotchecks/helpers/listener';
-import { batched } from './spotchecks/helpers/render';
+import { batched, guardedDetectChanges, hasCrashed, onCrash } from './spotchecks/helpers/render';
 import type { BuilderContext, SchemaNode } from './spotchecks/helpers/binding';
 
 // Path only: query or hash changes stay on the same screen.
@@ -88,6 +88,7 @@ export class SpotCheck implements OnInit, OnDestroy {
     setAppRunner((fn) => this.zone.run(fn));
     this.cleanups.push(spotcheckStore.subscribe(() => this.onStateChange()));
     this.cleanups.push(componentStore.subscribe(() => this.onStateChange()));
+    this.cleanups.push(onCrash(() => this.hideAfterCrash()));
     this.watchWindow();
     this.watchRouter();
     this.onStateChange();
@@ -126,6 +127,7 @@ export class SpotCheck implements OnInit, OnDestroy {
   }
 
   private render(): void {
+    if (hasCrashed()) return;
     const state = spotcheckStore.getState().SpotCheckState;
     const componentState = componentStore.getState().componentState;
     const schemas = componentState.isLoaded ? componentState.schemas || {} : {};
@@ -145,7 +147,16 @@ export class SpotCheck implements OnInit, OnDestroy {
     this.buttonCtx = { state, styles: this.buttonStyles, handlers: this.buttonHandlers };
     // Wait for styles so the button never renders unstyled for a frame.
     this.buttonReady = Object.keys(this.buttonStyles || {}).length > 0;
-    this.cdr.detectChanges();
+    guardedDetectChanges(this.cdr, 'render');
+  }
+
+  // After a failed draw, SpotCheck renders nothing for the rest of the session (RN error boundary parity).
+  private hideAfterCrash(): void {
+    this.wrapperSchema = null;
+    this.buttonSchema = null;
+    try {
+      this.cdr.detectChanges();
+    } catch {}
   }
 
   // Screen size and the part of it the on-screen keyboard covers.

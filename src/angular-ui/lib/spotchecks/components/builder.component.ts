@@ -17,7 +17,7 @@ import { NgFor, NgIf, NgStyle, NgSwitch, NgSwitchCase } from '@angular/common';
 import { componentStore, spotcheckStore } from '../state/store';
 import { execute } from '../helpers/executables';
 import { SurveyPage } from '../helpers/survey-page';
-import { batched } from '../helpers/render';
+import { batched, guardedDetectChanges } from '../helpers/render';
 import {
   BuilderContext,
   SchemaNode,
@@ -220,7 +220,7 @@ export class CloseButtonComponent implements OnInit, OnDestroy {
   private readonly scheduleRender = batched(() => {
     if (this.destroyed) return;
     this.ctx = { state: spotcheckStore.getState().SpotCheckState, styles: this.styles, handlers: this.handlers };
-    this.cdr.detectChanges();
+    guardedDetectChanges(this.cdr, 'closeButtonRender');
   });
 
   constructor(private cdr: ChangeDetectorRef) {}
