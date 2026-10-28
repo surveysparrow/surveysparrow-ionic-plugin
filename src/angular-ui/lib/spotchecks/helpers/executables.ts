@@ -1,7 +1,7 @@
 import { functionStore, spotcheckStore } from '../state/store';
 import { saveData, loadData } from './storage';
 import { sdkListener } from './listener';
-import { captureP0Error, captureP1Error, addBreadcrumb, registerExecute } from './sentry';
+import { captureP0Error, captureP1Error, addBreadcrumb, safeAddBreadcrumb, isReported, registerExecute } from './sentry';
 import { SDK_VERSION } from './version';
 
 export const dispatchWrapper = (stateUpdate: any) => {
@@ -93,7 +93,7 @@ export const execute = async (functionName: string, params?: any): Promise<any> 
       dispatchWrapper,
       storage: { saveData, loadData },
       listener: sdkListener,
-      sentry: { captureP0Error, captureP1Error },
+      sentry: { captureP0Error, captureP1Error, addBreadcrumb: safeAddBreadcrumb },
       keyboard,
     };
 
@@ -112,7 +112,10 @@ export const execute = async (functionName: string, params?: any): Promise<any> 
     return await func(payload);
   } catch (error: any) {
     if (isSentryFunction(functionName)) return null;
-    captureP1Error(error, 'GENERAL', { action: 'execute:runtime', functionName, errorMessage: error?.message });
+    // Skip when the function already reported this error itself.
+    if (!isReported(error)) {
+      captureP1Error(error, 'GENERAL', { action: 'execute:runtime', functionName, errorMessage: error?.message });
+    }
     console.error(`[execute] ${functionName}:`, error);
     return null;
   }
