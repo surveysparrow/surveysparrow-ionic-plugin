@@ -12,18 +12,14 @@ metadata:
   description: surveysparrow-ionic-plugin (SurveySparrow)
   annotations:
     # No API definition, dependency graph or TechDocs for this repo yet: hide those tabs.
-    sparrow.io/hide: api,dependencies,docs
+    # A library has no pods or logs: hide those too.
+    sparrow.io/hide: api,dependencies,docs,observability
     github.com/project-slug: surveysparrow/surveysparrow-ionic-plugin
     backstage.io/source-location: url:https://github.com/surveysparrow/surveysparrow-ionic-plugin/tree/main/
   tags:
   - library
   - surveysparrow
   - typescript
-  links:
-  - url: https://github.com/surveysparrow/surveysparrow-ionic-plugin
-    title: GitHub repository
-    icon: github
-    type: repo
 spec:
   type: library
   lifecycle: production
