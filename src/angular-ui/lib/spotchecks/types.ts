@@ -1,44 +1,8 @@
-export interface SpotcheckState {
-  isVisible: boolean;
-  spotcheckPosition: string;
-  spotcheckURL: string;
-  spotcheckID: number;
-  spotcheckContactID: number;
-  afterDelay: number;
-  maxHeight: number;
-  currentQuestionHeight: number;
-  isFullScreenMode: boolean;
-  isBannerImageOn: boolean;
-  triggerToken: string;
-  closeButtonStyle: Record<string, string>;
-  isCloseButtonEnabled: boolean;
-  isSpotPassed: boolean;
-  isChecksPassed: boolean;
-  customEventsSpotChecks: Record<string, any>[];
-  targetToken: string;
-  domainName: string;
-  userDetails: UserDetails;
-  variables: Variables;
-  customProperties: CustomProperties;
-  traceId: string;
-  isClassicLoading: boolean;
-  isChatLoading: boolean;
-  isClassicLoadEventReceived: boolean;
-  isChatLoadEventReceived: boolean;
-  classicUrl: string;
-  chatUrl: string;
-  classicWebViewRef: any | null;
-  chatWebViewRef: any | null;
-  filteredSpotChecks: Record<string, any>[];
-  spotCheckType: String;
-  isMounted: boolean;
-  textPosition: number;
-  screenHeight: number;
-  keyBoardHeight: number;
-  spotChecksMode: string;
-  avatarEnabled: boolean;
-  avatarUrl: string;
-  screenwiseUserDetails: Record<string, UserDetails | undefined>;
+export interface SsSpotcheckListener {
+  onSurveyLoaded?: (response: Record<string, any>) => void | Promise<void>;
+  onSurveyResponse?: (response: Record<string, any>) => void | Promise<void>;
+  onPartialSubmission?: (response: Record<string, any>) => void | Promise<void>;
+  onCloseButtonTap?: () => void | Promise<void>;
 }
 
 export interface UserDetails {
@@ -59,28 +23,31 @@ export interface CustomProperties {
   [key: string]: any;
 }
 
-export interface TrackScreenProps {
-  screen: string;
-  options?: {
-    variables?: Variables;
-    customProperties?: CustomProperties;
-    userDetails?: UserDetails;
-  };
-}
-
-export interface TrackEventProps {
-  screen: string;
-  event: {
-    [key: string]: {
-      [key: string]: string;
-    };
-  };
-}
-
-export interface InitializeSpotChecksProps {
+export interface SpotcheckProps {
   domainName: string;
   targetToken: string;
   userDetails?: UserDetails;
   variables?: Variables;
   customProperties?: CustomProperties;
+  listener?: SsSpotcheckListener;
+}
+
+// Legacy name for the init options.
+export type InitializeSpotChecksProps = SpotcheckProps;
+
+export interface TrackScreenOptions {
+  variables?: Variables;
+  customProperties?: CustomProperties;
+  userDetails?: UserDetails;
+}
+
+export interface TrackScreenProps {
+  screen: string;
+  options?: TrackScreenOptions;
+}
+
+export interface TrackEventProps {
+  screen: string;
+  event: Record<string, any>;
+  options?: TrackScreenOptions;
 }
